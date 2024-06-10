@@ -80,7 +80,7 @@ export function ProfileForm({id, token, idTable}) {
     return mergedISOString
   }
   function onSubmit(values) {
-    setTransition(() => {
+    setTransition(async () => {
       const body = {
         data: {
           name: values.name,
@@ -93,18 +93,38 @@ export function ProfileForm({id, token, idTable}) {
           table: idTable,
         },
       }
+      const formdata = new FormData()
+      formdata.append('entry.1302347709', values.name)
+      formdata.append('entry.2068127557', values.email)
+      formdata.append('entry.746753759', values.phone)
+      formdata.append(
+        'entry.1638872290',
+        handleMergeDateAndTime(date, values.time),
+      )
+      formdata.append('entry.1725351599', values.note)
+      formdata.append('entry.2107664396', 'processing')
+      formdata.append('entry.423096853', idTable)
+      formdata.append('entry.344451594', id)
+      const res = await fetch(
+        'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeYDJntbTgoRJF-azx_urnO6ywTb7KFsj1vCsJvQtPQx15n8g/formResponse',
+        {
+          method: 'POST',
+          body: formdata,
+          mode: 'no-cors',
+        },
+      )
       const request = {
         api: `/orders`,
         token: token,
         body: JSON.stringify(body),
       }
-      createOrder(request)
-        .then((res) => {
-          console.log('🚀 ~ .then ~ res:', res)
-        })
-        .catch((error) => {
-          console.log('🚀 ~ createOrder ~ error:', error)
-        })
+      // createOrder(request)
+      //   .then((res) => {
+      //     console.log('🚀 ~ .then ~ res:', res)
+      //   })
+      //   .catch((error) => {
+      //     console.log('🚀 ~ createOrder ~ error:', error)
+      //   })
     })
   }
 
