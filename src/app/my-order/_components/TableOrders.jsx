@@ -38,7 +38,7 @@ export function TableOrders({data, token}) {
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
-  function handleCancelOrder(payment) {
+  async function handleCancelOrder(payment) {
     console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
     const request = {
       api: `/orders/${payment.id}`,
@@ -53,6 +53,24 @@ export function TableOrders({data, token}) {
       console.log('🚀 ~ updateStatusOrderById ~ res:', res)
       RevalidateTags('orders')
     })
+    const dataDon = new FormData()
+    dataDon?.append('entry.377556313', payment?.date)
+    dataDon?.append('entry.1803996443', payment?.email)
+    dataDon?.append('entry.763171905', payment?.id)
+    dataDon?.append('entry.594050415', payment?.phone)
+    dataDon?.append('entry.1946356008', payment?.status)
+    dataDon?.append('entry.1520761440', payment?.table)
+    dataDon?.append('entry.964051301', payment?.time)
+    dataDon?.append('entry.1056944520', payment?.username)
+    const res = await fetch(
+      'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfyJq3cwdztaqWBLn9s99mtgJDQjSpgeawb1RzhEAPnfXv8-Q/formResponse',
+      {
+        method: 'POST',
+        body: dataDon,
+        mode: 'no-cors',
+      },
+    )
+    console.log('ok')
   }
   const columns = [
     {
