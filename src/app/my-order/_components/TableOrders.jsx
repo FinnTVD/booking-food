@@ -27,109 +27,132 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {useState} from 'react'
+import RevalidateTags from '@/actions/revalidateTags'
+import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
+import {ConfirmCancel} from './ConfirmCancel'
 
-export const columns = [
-  {
-    id: 'select',
-    header: ({table}) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({row}) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'id',
-    header: 'Mã đơn',
-    cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
-  },
-  {
-    accessorKey: 'username',
-    header: ({column}) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Tên
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    },
-    cell: ({row}) => (
-      <div className='lowercase'>{row.getValue('username')}</div>
-    ),
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
-  },
-  {
-    accessorKey: 'phone',
-    header: 'SDT',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'table',
-    header: 'Bàn',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
-  },
-  {
-    accessorKey: 'date',
-    header: 'Ngày',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
-  },
-  {
-    accessorKey: 'time',
-    header: 'Giờ',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('time')}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Trạng thái',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('status')}</div>,
-  },
-
-  {
-    id: 'actions',
-    // enableHiding: false,
-    cell: ({row}) => {
-      const payment = row.original
-
-      return (
-        <button
-          onClick={() => {
-            console.log(payment)
-          }}
-          className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'
-        >
-          Huỷ đơn
-        </button>
-      )
-    },
-  },
-]
-
-export function TableOrders({data}) {
+export function TableOrders({data, token}) {
+  console.log('🚀 ~ TableOrders ~ data:', data)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
+  function handleCancelOrder(payment) {
+    console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
+    const request = {
+      api: `/orders/${payment.id}`,
+      body: JSON.stringify({
+        data: {
+          status: 'cancel',
+        },
+      }),
+      token: token,
+    }
+    updateStatusOrderById(request).then((res) => {
+      console.log('🚀 ~ updateStatusOrderById ~ res:', res)
+      RevalidateTags('orders')
+    })
+  }
+  const columns = [
+    {
+      id: 'select',
+      header: ({table}) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+        />
+      ),
+      cell: ({row}) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Select row'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'id',
+      header: 'Mã đơn',
+      cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Tên
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => (
+        <div className='lowercase'>{row.getValue('username')}</div>
+      ),
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
+    },
+    {
+      accessorKey: 'phone',
+      header: 'SDT',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'table',
+      header: 'Bàn',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
+    },
+    {
+      accessorKey: 'date',
+      header: 'Ngày',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
+    },
+    {
+      accessorKey: 'time',
+      header: 'Giờ',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('time')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Trạng thái',
+      cell: ({row}) => (
+        <div className='lowercase'>{row.getValue('status')}</div>
+      ),
+    },
+
+    {
+      id: 'actions',
+      // enableHiding: false,
+      cell: ({row}) => {
+        const payment = row.original
+        if (
+          payment?.status === 'Đã huỷ' ||
+          payment?.status === 'Hoàn tất' ||
+          payment?.status === 'Thành công'
+        )
+          return null
+        return (
+          <ConfirmCancel handle={() => handleCancelOrder(payment)}>
+            <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+              Huỷ đơn
+            </button>
+          </ConfirmCancel>
+        )
+      },
+    },
+  ]
   const table = useReactTable({
     data,
     columns,

@@ -13,14 +13,16 @@ export default function ItemTable({item}) {
           className='size-full object-cover rounded-tl-[0.6rem] rounded-tr-[0.6rem]'
           src={
             process.env.NEXT_PUBLIC_BE +
-            item.attributes.thumbnail.data[0].attributes.formats.small.url
+            item.attributes.thumbnail.data?.[0].attributes.formats.small.url
           }
-          alt={item.attributes.thumbnail.data[0].attributes.formats.small.name}
+          alt={
+            item.attributes.thumbnail.data?.[0].attributes.formats.small.name
+          }
           width={
-            item.attributes.thumbnail.data[0].attributes.formats.small.width
+            item.attributes.thumbnail.data?.[0].attributes.formats.small.width
           }
           height={
-            item.attributes.thumbnail.data[0].attributes.formats.small.height
+            item.attributes.thumbnail.data?.[0].attributes.formats.small.height
           }
         />
         <div
@@ -36,7 +38,7 @@ export default function ItemTable({item}) {
         <span className='block'>Số ghế: {item.attributes.slot}</span>
         <span className='block'>Vị trí: {direction?.name}</span>
         <p className='line-clamp-1'>
-          {item.attributes.description[0].children[0].text}
+          {item.attributes.description?.[0].children[0].text}
         </p>
         <DialogForm idTable={item.id}>
           <button

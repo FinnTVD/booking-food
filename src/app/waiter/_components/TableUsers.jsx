@@ -1,9 +1,5 @@
 'use client'
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -19,9 +15,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {Input} from '@/components/ui/input'
@@ -35,145 +28,182 @@ import {
 } from '@/components/ui/table'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
 import {useState} from 'react'
-
-export const columns = [
-  {
-    id: 'select',
-    header: ({table}) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({row}) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'id',
-    header: 'Id',
-    cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
-  },
-  {
-    accessorKey: 'avatar',
-    header: 'Avatar',
-    cell: ({row}) => (
-      <Avatar className='cursor-pointer'>
-        <AvatarImage
-          className='object-cover'
-          src={
-            row.getValue('avatar')
-              ? process.env.NEXT_PUBLIC_BE + row.getValue('avatar')
-              : 'https://github.com/shadcn.png'
-          }
-          alt='@shadcn'
-        />
-        <AvatarFallback>BK</AvatarFallback>
-      </Avatar>
-    ),
-  },
-  {
-    accessorKey: 'username',
-    header: ({column}) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Name
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    },
-    cell: ({row}) => (
-      <div className='lowercase'>{row.getValue('username')}</div>
-    ),
-  },
-  {
-    accessorKey: 'email',
-    header: ({column}) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Email
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    },
-    cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'role',
-    header: ({column}) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Role
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    },
-    cell: ({row}) => <div className='lowercase'>{row.getValue('role')}</div>,
-  },
-  // {
-  //   id: 'actions',
-  //   enableHiding: false,
-  //   cell: ({row}) => {
-  //     const payment = row.original
-
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button
-  //             variant='ghost'
-  //             className='w-8 h-8 p-0'
-  //           >
-  //             <span className='sr-only'>Open menu</span>
-  //             <MoreHorizontal className='w-4 h-4' />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align='end'>
-  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-  //           <DropdownMenuItem
-  //             onClick={() => navigator.clipboard.writeText(payment.id)}
-  //           >
-  //             Copy payment ID
-  //           </DropdownMenuItem>
-  //           <DropdownMenuSeparator />
-  //           <DropdownMenuItem>View customer</DropdownMenuItem>
-  //           <DropdownMenuItem>View payment details</DropdownMenuItem>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     )
-  //   },
-  // },
-]
+import {DropdownRoles} from './DropDownRoles'
+import {ConfirmCancel} from '@/app/my-order/_components/ConfirmCancel'
+import {deleteUserById} from '@/actions/deleteUserById'
+import {updateRoleUser} from '@/actions/updateRoleUser'
+import RevalidateTags from '@/actions/revalidateTags'
 
 export function TableUsers({data}) {
+  console.log('🚀 ~ TableUsers ~ data:', data)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
+  function handleDeleteUserById(id) {
+    console.log('🚀 ~ handleDeleteUserById ~ id:', id)
+    const request = {
+      api: `/users/${id}`,
+      token: process.env.NEXT_PUBLIC_TOKEN,
+    }
+    deleteUserById(request).then((res) => {
+      console.log('🚀 ~ deleteUserById ~ res:', res)
+      RevalidateTags('waiter')
+    })
+  }
+
+  function handleChangeRoleUser(idRoleNext, idRolePrev) {
+    const body = {
+      role: {
+        connect: [
+          {
+            id: idRoleNext,
+          },
+        ],
+        disconnect: [
+          {
+            id: idRolePrev,
+          },
+        ],
+      },
+    }
+    const request = {
+      api: `/api/users/${id}`,
+      body: JSON.stringify(body),
+      token: process.env.NEXT_PUBLIC_TOKEN,
+    }
+    updateRoleUser(request).then((res) => {
+      console.log('res', res)
+    })
+  }
+  const columns = [
+    {
+      id: 'select',
+      header: ({table}) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+        />
+      ),
+      cell: ({row}) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Select row'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'id',
+      header: 'Id',
+      cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
+    },
+    {
+      accessorKey: 'avatar',
+      header: 'Avatar',
+      cell: ({row}) => (
+        <Avatar className='cursor-pointer'>
+          <AvatarImage
+            className='object-cover'
+            src={
+              row.getValue('avatar')
+                ? process.env.NEXT_PUBLIC_BE + row.getValue('avatar')
+                : 'https://github.com/shadcn.png'
+            }
+            alt='@shadcn'
+          />
+          <AvatarFallback>BK</AvatarFallback>
+        </Avatar>
+      ),
+    },
+    {
+      accessorKey: 'username',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Name
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => (
+        <div className='lowercase'>{row.getValue('username')}</div>
+      ),
+    },
+    {
+      accessorKey: 'email',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Email
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'role',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Role
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => <div className='lowercase'>{row.getValue('role')}</div>,
+    },
+    {
+      id: 'actions',
+      header: 'Chỉnh sửa',
+      cell: ({row}) => {
+        const payment = row.original
+        if (payment?.role === 'Administrator') return null
+        return (
+          <div className='space-x-[0.5rem]'>
+            <ConfirmCancel
+              handle={() => handleDeleteUserById(payment?.id)}
+              title='Bạn vẫn muốn tiếp tục xoá tài khoản này?'
+            >
+              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+                Xoá tài khoản
+              </button>
+            </ConfirmCancel>
+            <DropdownRoles
+              handle={handleChangeRoleUser}
+              role={payment?.role}
+            >
+              <button className='px-[1rem] py-[0.4rem] rounded-[0.5rem] text-center text-black bg-white font-bold border-none active:border-none'>
+                Phân quyền
+              </button>
+            </DropdownRoles>
+          </div>
+        )
+      },
+    },
+  ]
   const table = useReactTable({
     data,
     columns,

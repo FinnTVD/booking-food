@@ -1,17 +1,18 @@
-import getDataAuth from '@/lib/getDataAuth'
 import {cookies} from 'next/headers'
 import {TableOrders} from './TableOrders'
 import {handleStatusOrder} from '@/lib/utils'
+import getDataAuthTags from '@/lib/getDataAuthTag'
 
 export default async function Section1() {
   const cookieStore = cookies()
   const token = cookieStore.get('jwtBooking')?.value
   const id = cookieStore.get('idBooking')?.value
   const request = {
-    api: `/orders?populate[table][populate]=floor&populate=user&&filters[user][id]=${id}`,
+    api: `/orders?populate[table][populate]=floor&populate=user&&filters[user][id]=${id}&sort=publishedAt:desc`,
     token: token,
+    tags: 'orders',
   }
-  const data = await getDataAuth(request)
+  const data = await getDataAuthTags(request)
 
   function handleDate(isoString) {
     const date = new Date(isoString)
@@ -55,7 +56,10 @@ export default async function Section1() {
   const dataNew = formatData(data?.data)
   return (
     <section className='container'>
-      <TableOrders data={dataNew} />
+      <TableOrders
+        data={dataNew}
+        token={token}
+      />
     </section>
   )
 }

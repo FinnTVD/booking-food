@@ -1,30 +1,39 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
-import getDataAuth from '@/lib/getDataAuth'
 import {handleStatusOrder} from '@/lib/utils'
 import {TableOrders} from './TableOrders'
+import getDataAuthTags from '@/lib/getDataAuthTag'
+import {cookies} from 'next/headers'
 export default async function TabsOrder() {
   const request1 = {
-    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=processing`,
+    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=processing&sort=publishedAt:desc`,
     token: process.env.TOKEN,
+    tag: 'order1',
   }
   const request2 = {
-    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=confirm`,
+    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=confirm&sort=publishedAt:desc`,
     token: process.env.TOKEN,
+    tag: 'order2',
   }
   const request3 = {
-    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=done`,
+    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=done&sort=publishedAt:desc`,
     token: process.env.TOKEN,
+    tag: 'order3',
   }
   const request4 = {
-    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=cancel`,
+    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=cancel&sort=publishedAt:desc`,
     token: process.env.TOKEN,
+    tag: 'order4',
   }
   const [data1, data2, data3, data4] = await Promise.all([
-    getDataAuth(request1),
-    getDataAuth(request2),
-    getDataAuth(request3),
-    getDataAuth(request4),
+    getDataAuthTags(request1),
+    getDataAuthTags(request2),
+    getDataAuthTags(request3),
+    getDataAuthTags(request4),
   ])
+
+  const cookieStore = cookies()
+  const token = cookieStore.get('jwtBooking')?.value
+  const id = cookieStore.get('idBooking')?.value
 
   function handleDate(isoString) {
     const date = new Date(isoString)
@@ -77,7 +86,11 @@ export default async function TabsOrder() {
         <TabsTrigger value='cancel'>Đã huỷ</TabsTrigger>
       </TabsList>
       <TabsContent value='processing'>
-        <TableOrders data={formatData(data1?.data)} />
+        <TableOrders
+          token={token}
+          data={formatData(data1?.data)}
+          type='processing'
+        />
       </TabsContent>
       <TabsContent value='confirm'>
         <TableOrders data={formatData(data2?.data)} />

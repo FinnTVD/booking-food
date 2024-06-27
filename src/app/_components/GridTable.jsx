@@ -7,10 +7,10 @@ export default async function GridTable({id}) {
     token: process.env.TOKEN,
   }
   const res = await getDataAuth(request)
-  const data = res.data[0].attributes.tables.data
+  const data = res?.data?.[0]?.attributes?.tables?.data
   return (
     <div className='w-full gap-[1.5rem] grid grid-cols-4 mt-[2rem] max-md:grid-cols-1 max-md:gap-[1rem]'>
-      {data.map((item, index) => (
+      {data?.map((item, index) => (
         <ItemTable
           key={index}
           item={item}

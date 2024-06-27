@@ -27,109 +27,140 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {useState} from 'react'
+import {ConfirmCancel} from '@/app/my-order/_components/ConfirmCancel'
+import RevalidateTags from '@/actions/revalidateTags'
+import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 
-export const columns = [
-  {
-    id: 'select',
-    header: ({table}) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({row}) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'id',
-    header: 'Mã đơn',
-    cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
-  },
-  {
-    accessorKey: 'username',
-    header: ({column}) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Tên
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    },
-    cell: ({row}) => (
-      <div className='lowercase'>{row.getValue('username')}</div>
-    ),
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
-  },
-  {
-    accessorKey: 'phone',
-    header: 'SDT',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'table',
-    header: 'Bàn',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
-  },
-  {
-    accessorKey: 'date',
-    header: 'Ngày',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
-  },
-  {
-    accessorKey: 'time',
-    header: 'Giờ',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('time')}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Trạng thái',
-    cell: ({row}) => <div className='lowercase'>{row.getValue('status')}</div>,
-  },
-
-  {
-    id: 'actions',
-    // enableHiding: false,
-    cell: ({row}) => {
-      const payment = row.original
-
-      return (
-        <button
-          onClick={() => {
-            console.log(payment)
-          }}
-          className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'
-        >
-          Huỷ đơn
-        </button>
-      )
-    },
-  },
-]
-
-export function TableOrders({data}) {
+export function TableOrders({data, token, type}) {
+  console.log('🚀 ~ TableOrders ~ token:', token)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
+  function handleCancelOrder(payment, status) {
+    console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
+    const request = {
+      api: `/orders/${payment.id}`,
+      body: JSON.stringify({
+        data: {
+          status: status,
+        },
+      }),
+      token: token,
+    }
+    updateStatusOrderById(request).then((res) => {
+      console.log('🚀 ~ updateStatusOrderById ~ res:', res)
+      RevalidateTags('order1')
+      RevalidateTags('order2')
+      RevalidateTags('order3')
+      RevalidateTags('order4')
+    })
+  }
+  const columns = [
+    {
+      id: 'select',
+      header: ({table}) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+        />
+      ),
+      cell: ({row}) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Select row'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'id',
+      header: 'Mã đơn',
+      cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Tên
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => (
+        <div className='lowercase'>{row.getValue('username')}</div>
+      ),
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
+    },
+    {
+      accessorKey: 'phone',
+      header: 'SDT',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'table',
+      header: 'Bàn',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
+    },
+    {
+      accessorKey: 'date',
+      header: 'Ngày',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
+    },
+    {
+      accessorKey: 'time',
+      header: 'Giờ',
+      cell: ({row}) => <div className='lowercase'>{row.getValue('time')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Trạng thái',
+      cell: ({row}) => (
+        <div className='lowercase'>{row.getValue('status')}</div>
+      ),
+    },
+    {
+      id: 'actions',
+      // enableHiding: false,
+      cell: ({row}) => {
+        if (type !== 'processing') return null
+        const payment = row.original
+
+        return (
+          <div className='space-x-[1rem]'>
+            <ConfirmCancel handle={() => handleCancelOrder(payment, 'cancel')}>
+              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+                Huỷ đơn
+              </button>
+            </ConfirmCancel>
+            <ConfirmCancel
+              handle={() => handleCancelOrder(payment, 'confirm')}
+              title='Xác nhận đơn đặt bàn thành công?'
+            >
+              <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
+                Xác nhận
+              </button>
+            </ConfirmCancel>
+          </div>
+        )
+      },
+    },
+  ]
   const table = useReactTable({
     data,
     columns,
