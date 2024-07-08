@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {ArrowUpDown, ChevronDown} from 'lucide-react'
+import {ArrowUpDown, ChevronDown, MoreHorizontal} from 'lucide-react'
 
 import {Button} from '@/components/ui/button'
 import {Checkbox} from '@/components/ui/checkbox'
@@ -26,35 +26,55 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
 import {useState} from 'react'
-import {ConfirmCancel} from '@/app/my-order/_components/ConfirmCancel'
+import {DropdownRoles} from './DropDownRoles'
+import {ConfirmCancel} from '@/sections/my-order/_components/ConfirmCancel'
+import {deleteUserById} from '@/actions/deleteUserById'
+import {updateRoleUser} from '@/actions/updateRoleUser'
 import RevalidateTags from '@/actions/revalidateTags'
-import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 
-export function TableOrders({data, token, type}) {
-  console.log('🚀 ~ TableOrders ~ token:', token)
+export function TableUsers({data}) {
+  console.log('🚀 ~ TableUsers ~ data:', data)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
-  function handleCancelOrder(payment, status) {
-    console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
+  function handleDeleteUserById(id) {
+    console.log('🚀 ~ handleDeleteUserById ~ id:', id)
     const request = {
-      api: `/orders/${payment.id}`,
-      body: JSON.stringify({
-        data: {
-          status: status,
-        },
-      }),
-      token: token,
+      api: `/users/${id}`,
+      token: process.env.NEXT_PUBLIC_TOKEN,
     }
-    updateStatusOrderById(request).then((res) => {
-      console.log('🚀 ~ updateStatusOrderById ~ res:', res)
-      RevalidateTags('order1')
-      RevalidateTags('order2')
-      RevalidateTags('order3')
-      RevalidateTags('order4')
+    deleteUserById(request).then((res) => {
+      console.log('🚀 ~ deleteUserById ~ res:', res)
+      RevalidateTags('waiter')
+    })
+  }
+
+  function handleChangeRoleUser(idRoleNext, idRolePrev) {
+    const body = {
+      role: {
+        connect: [
+          {
+            id: idRoleNext,
+          },
+        ],
+        disconnect: [
+          {
+            id: idRolePrev,
+          },
+        ],
+      },
+    }
+    const request = {
+      api: `/api/users/${id}`,
+      body: JSON.stringify(body),
+      token: process.env.NEXT_PUBLIC_TOKEN,
+    }
+    updateRoleUser(request).then((res) => {
+      console.log('res', res)
     })
   }
   const columns = [
@@ -82,8 +102,26 @@ export function TableOrders({data, token, type}) {
     },
     {
       accessorKey: 'id',
-      header: 'Mã đơn',
+      header: 'Id',
       cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
+    },
+    {
+      accessorKey: 'avatar',
+      header: 'Avatar',
+      cell: ({row}) => (
+        <Avatar className='cursor-pointer'>
+          <AvatarImage
+            className='object-cover'
+            src={
+              row.getValue('avatar')
+                ? process.env.NEXT_PUBLIC_BE + row.getValue('avatar')
+                : 'https://github.com/shadcn.png'
+            }
+            alt='@shadcn'
+          />
+          <AvatarFallback>BK</AvatarFallback>
+        </Avatar>
+      ),
     },
     {
       accessorKey: 'username',
@@ -93,7 +131,7 @@ export function TableOrders({data, token, type}) {
             variant='ghost'
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Tên
+            Name
             <ArrowUpDown className='w-4 h-4 ml-2' />
           </Button>
         )
@@ -104,58 +142,63 @@ export function TableOrders({data, token, type}) {
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Email
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
       cell: ({row}) => <div className='lowercase'>{row.getValue('email')}</div>,
     },
     {
       accessorKey: 'phone',
-      header: 'SDT',
+      header: 'Phone',
       cell: ({row}) => <div className='lowercase'>{row.getValue('phone')}</div>,
     },
     {
-      accessorKey: 'table',
-      header: 'Bàn',
-      cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
-    },
-    {
-      accessorKey: 'date',
-      header: 'Ngày',
-      cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
-    },
-    {
-      accessorKey: 'time',
-      header: 'Giờ',
-      cell: ({row}) => <div className='lowercase'>{row.getValue('time')}</div>,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Trạng thái',
-      cell: ({row}) => (
-        <div className='lowercase'>{row.getValue('status')}</div>
-      ),
+      accessorKey: 'role',
+      header: ({column}) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Role
+            <ArrowUpDown className='w-4 h-4 ml-2' />
+          </Button>
+        )
+      },
+      cell: ({row}) => <div className='lowercase'>{row.getValue('role')}</div>,
     },
     {
       id: 'actions',
-      // enableHiding: false,
+      header: 'Chỉnh sửa',
       cell: ({row}) => {
-        if (type !== 'processing') return null
         const payment = row.original
-
+        if (payment?.role === 'Administrator') return null
         return (
-          <div className='space-x-[1rem]'>
-            <ConfirmCancel handle={() => handleCancelOrder(payment, 'cancel')}>
-              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Huỷ đơn
-              </button>
-            </ConfirmCancel>
+          <div className='space-x-[0.5rem]'>
             <ConfirmCancel
-              handle={() => handleCancelOrder(payment, 'confirm')}
-              title='Xác nhận đơn đặt bàn thành công?'
+              handle={() => handleDeleteUserById(payment?.id)}
+              title='Bạn vẫn muốn tiếp tục xoá tài khoản này?'
             >
-              <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Xác nhận
+              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+                Xoá tài khoản
               </button>
             </ConfirmCancel>
+            <DropdownRoles
+              handle={handleChangeRoleUser}
+              role={payment?.role}
+            >
+              <button className='px-[1rem] py-[0.4rem] rounded-[0.5rem] text-center text-black bg-white font-bold border-none active:border-none'>
+                Phân quyền
+              </button>
+            </DropdownRoles>
           </div>
         )
       },
@@ -181,7 +224,7 @@ export function TableOrders({data, token, type}) {
   })
 
   return (
-    <div className='w-full bg-white px-[1rem] rounded-[0.6rem] py-[1rem]'>
+    <div className='w-full'>
       <div className='flex items-center py-4'>
         <div className='flex space-x-[2rem] w-full'>
           <Input

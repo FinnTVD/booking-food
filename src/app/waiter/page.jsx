@@ -1,5 +1,5 @@
 import {cookies} from 'next/headers'
-import Section1 from './_components/Section1'
+import Section1 from '../../sections/waiter/_components/Section1'
 import getDataAuth from '@/lib/getDataAuth'
 import {redirect} from 'next/navigation'
 
