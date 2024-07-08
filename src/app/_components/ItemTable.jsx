@@ -19,10 +19,12 @@ export default function ItemTable({item}) {
             item.attributes.thumbnail.data?.[0].attributes.formats.small.name
           }
           width={
-            item.attributes.thumbnail.data?.[0].attributes.formats.small.width
+            item.attributes.thumbnail.data?.[0].attributes.formats.small
+              .width || 400
           }
           height={
-            item.attributes.thumbnail.data?.[0].attributes.formats.small.height
+            item.attributes.thumbnail.data?.[0].attributes.formats.small
+              .height || 400
           }
         />
         <div
