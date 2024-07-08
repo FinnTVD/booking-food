@@ -1,7 +1,7 @@
 import {cookies} from 'next/headers'
-import Section1 from '../../sections/waiter/_components/Section1'
 import getDataAuth from '@/lib/getDataAuth'
 import {redirect} from 'next/navigation'
+import Section1 from '@/sections/waiter/components/Section1'
 
 export default async function page() {
   const cookieStore = cookies()

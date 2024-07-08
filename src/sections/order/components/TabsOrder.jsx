@@ -1,8 +1,8 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
 import {handleStatusOrder} from '@/lib/utils'
-import {TableOrders} from './TableOrders'
 import getDataAuthTags from '@/lib/getDataAuthTag'
 import {cookies} from 'next/headers'
+import TableOrders from './TableOrders'
 export default async function TabsOrder() {
   const request1 = {
     api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=processing&sort=publishedAt:desc`,

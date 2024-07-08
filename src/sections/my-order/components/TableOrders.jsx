@@ -27,34 +27,31 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {useState} from 'react'
-import {ConfirmCancel} from '@/sections/my-order/_components/ConfirmCancel'
 import RevalidateTags from '@/actions/revalidateTags'
 import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
+import ConfirmCancel from './ConfirmCancel'
 
-export function TableOrders({data, token, type}) {
-  console.log('🚀 ~ TableOrders ~ token:', token)
+export default function TableOrders({data, token}) {
+  console.log('🚀 ~ TableOrders ~ data:', data)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
-  function handleCancelOrder(payment, status) {
+  function handleCancelOrder(payment) {
     console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({
         data: {
-          status: status,
+          status: 'cancel',
         },
       }),
       token: token,
     }
     updateStatusOrderById(request).then((res) => {
       console.log('🚀 ~ updateStatusOrderById ~ res:', res)
-      RevalidateTags('order1')
-      RevalidateTags('order2')
-      RevalidateTags('order3')
-      RevalidateTags('order4')
+      RevalidateTags('orders')
     })
   }
   const columns = [
@@ -134,29 +131,24 @@ export function TableOrders({data, token, type}) {
         <div className='lowercase'>{row.getValue('status')}</div>
       ),
     },
+
     {
       id: 'actions',
       // enableHiding: false,
       cell: ({row}) => {
-        if (type !== 'processing') return null
         const payment = row.original
-
+        if (
+          payment?.status === 'Đã huỷ' ||
+          payment?.status === 'Hoàn tất' ||
+          payment?.status === 'Thành công'
+        )
+          return null
         return (
-          <div className='space-x-[1rem]'>
-            <ConfirmCancel handle={() => handleCancelOrder(payment, 'cancel')}>
-              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Huỷ đơn
-              </button>
-            </ConfirmCancel>
-            <ConfirmCancel
-              handle={() => handleCancelOrder(payment, 'confirm')}
-              title='Xác nhận đơn đặt bàn thành công?'
-            >
-              <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Xác nhận
-              </button>
-            </ConfirmCancel>
-          </div>
+          <ConfirmCancel handle={() => handleCancelOrder(payment)}>
+            <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+              Huỷ đơn
+            </button>
+          </ConfirmCancel>
         )
       },
     },

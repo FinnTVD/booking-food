@@ -1,4 +1,4 @@
-import TabsAuth from '../../sections/login/_components/TabsAuth'
+import TabsAuth from '@/sections/login/components/TabsAuth'
 
 export default function page() {
   return (

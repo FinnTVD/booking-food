@@ -1,4 +1,4 @@
-import Section1 from '../../sections/my-order/_components/Section1'
+import Section1 from '@/sections/my-order/components/Section1'
 
 export default function page() {
   return (

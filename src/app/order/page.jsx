@@ -1,5 +1,5 @@
 import getDataAuth from '@/lib/getDataAuth'
-import Section1 from '../../sections/order/_components/Section1'
+import Section1 from '@/sections/order/components/Section1'
 import {cookies} from 'next/headers'
 import {redirect} from 'next/navigation'
 

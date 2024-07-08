@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/table'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
 import {useState} from 'react'
-import ConfirmCancel from '@/sections/my-order/_components/ConfirmCancel'
+import ConfirmCancel from '@/sections/my-order/components/ConfirmCancel'
 import {deleteUserById} from '@/actions/deleteUserById'
 import {updateRoleUser} from '@/actions/updateRoleUser'
 import RevalidateTags from '@/actions/revalidateTags'

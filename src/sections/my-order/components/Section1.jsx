@@ -1,7 +1,7 @@
 import {cookies} from 'next/headers'
-import {TableOrders} from './TableOrders'
 import {handleStatusOrder} from '@/lib/utils'
 import getDataAuthTags from '@/lib/getDataAuthTag'
+import TableOrders from './TableOrders'
 
 export default async function Section1() {
   const cookieStore = cookies()
