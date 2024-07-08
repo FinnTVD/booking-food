@@ -1,10 +1,7 @@
 'use client'
 
 import {deleteCookie} from '@/actions/deleteCookie'
-import {
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-} from '@/components/ui/dropdown-menu'
+import {DropdownMenuItem} from '@/components/ui/dropdown-menu'
 import {LogOut} from 'lucide-react'
 import {useRouter} from 'next/navigation'
 

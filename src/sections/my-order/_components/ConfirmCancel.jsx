@@ -9,7 +9,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
-export function ConfirmCancel({children, handle, title = ''}) {
+export default function ConfirmCancel({children, handle, title = ''}) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>

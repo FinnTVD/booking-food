@@ -24,7 +24,7 @@ const roles = [
   },
 ]
 
-export function DropdownRoles({children, role, handle}) {
+export default function DropdownRoles({children, role, handle}) {
   const [position, setPosition] = useState(role)
 
   function handleIdRole(role) {

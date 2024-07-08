@@ -4,7 +4,6 @@ import {
   Github,
   Keyboard,
   LifeBuoy,
-  LogOut,
   Mail,
   MessageSquare,
   Plus,

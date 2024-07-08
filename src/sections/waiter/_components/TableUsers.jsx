@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {ArrowUpDown, ChevronDown, MoreHorizontal} from 'lucide-react'
+import {ArrowUpDown, ChevronDown} from 'lucide-react'
 
 import {Button} from '@/components/ui/button'
 import {Checkbox} from '@/components/ui/checkbox'
@@ -28,11 +28,11 @@ import {
 } from '@/components/ui/table'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
 import {useState} from 'react'
-import {DropdownRoles} from './DropDownRoles'
-import {ConfirmCancel} from '@/sections/my-order/_components/ConfirmCancel'
+import ConfirmCancel from '@/sections/my-order/_components/ConfirmCancel'
 import {deleteUserById} from '@/actions/deleteUserById'
 import {updateRoleUser} from '@/actions/updateRoleUser'
 import RevalidateTags from '@/actions/revalidateTags'
+import DropdownRoles from './DropdownRoles'
 
 export function TableUsers({data}) {
   console.log('🚀 ~ TableUsers ~ data:', data)
