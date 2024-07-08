@@ -1,7 +1,7 @@
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
-import {MenuAccount} from './MenuAccount'
+import MenuAccount from './MenuAccount'
 
-export function AvatarUser({data}) {
+export default function AvatarUser({data}) {
   return (
     <MenuAccount>
       <Avatar className='cursor-pointer'>

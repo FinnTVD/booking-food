@@ -28,9 +28,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import BtnLogOut from './BtnLogOut'
+import BtnLogOut from './BtnLogout'
 
-export function MenuAccount({children}) {
+export default function MenuAccount({children}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>

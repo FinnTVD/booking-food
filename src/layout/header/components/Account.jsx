@@ -1,9 +1,9 @@
 import {cookies} from 'next/headers'
 
-import {AvatarUser} from '@/sections/login/components/AvatarUser'
 import Link from 'next/link'
 import getDataAuth from '@/lib/getDataAuth'
 import Roles from './Roles'
+import AvatarUser from '@/sections/login/components/AvatarUser'
 
 export default async function Account() {
   const cookieStore = cookies()
