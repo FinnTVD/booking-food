@@ -4,7 +4,6 @@ import ItemTable from './ItemTable'
 export default async function GridTable({id}) {
   const request = {
     api: `/floors?populate[tables][populate]=thumbnail&filters[id]=${id}`,
-    token: process.env.TOKEN,
   }
   const res = await getDataAuth(request)
   const data = res?.data?.[0]?.attributes?.tables?.data

@@ -1,26 +1,26 @@
 export const initFloors = [
   {
-    id: 1,
+    id: 6,
     name: 'Tầng 1',
     value: 'floor1',
   },
   {
-    id: 2,
+    id: 7,
     name: 'Tầng 2',
     value: 'floor2',
   },
   {
-    id: 3,
+    id: 8,
     name: 'Tầng 3',
     value: 'floor3',
   },
   {
-    id: 4,
+    id: 12,
     name: 'Ngoài trời',
     value: 'outside',
   },
   {
-    id: 5,
+    id: 10,
     name: 'Phòng vip',
     value: 'roomvip',
   },

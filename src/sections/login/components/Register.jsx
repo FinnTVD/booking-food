@@ -1,7 +1,6 @@
 'use client'
 
 import {zodResolver} from '@hookform/resolvers/zod'
-import {useForm} from 'react-hook-form'
 import {z} from 'zod'
 
 import {Button} from '@/components/ui/button'
@@ -18,6 +17,8 @@ import {useState, useTransition} from 'react'
 import ICEyeActive from '@/components/icons/ICEyeActive'
 import ICEyeActiveDisable from '@/components/icons/ICEyeActiveDisable'
 import {register} from '@/actions/register'
+import {toast} from 'sonner'
+import {useForm} from 'react-hook-form'
 
 //init schema
 const formSchema = z
@@ -29,6 +30,7 @@ const formSchema = z
       .string()
       .min(1, {message: 'Vui lòng nhập email!'})
       .email({message: 'Nhập đúng định dạng email'}),
+    phone: z.string().min(1, {message: 'Vui lòng nhập sdt'}),
     password: z
       .string()
       .min(1, {message: 'Vui lòng nhập mật khẩu'})
@@ -66,6 +68,7 @@ export default function Register() {
     defaultValues: {
       username: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
     },
@@ -80,13 +83,18 @@ export default function Register() {
           body: {
             username: values.username,
             email: values.email,
+            phone: values.phone,
             password: values.password,
           },
         }
         register(request).then((res) => {
           console.log('🚀 ~ register ~ res:', res)
-          console.log(res)
           if (res?.jwt) {
+            toast.success('Đăng ký tài khoản thành công.', {
+              duration: 3000,
+              position: 'top-center',
+            })
+            console.log('res', res)
           } else {
             setIsFail(true)
           }
@@ -96,6 +104,7 @@ export default function Register() {
       }
     })
   }
+
   return (
     <Form {...form}>
       <form
@@ -121,6 +130,19 @@ export default function Register() {
           render={({field}) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='phone'
+          render={({field}) => (
+            <FormItem>
+              <FormLabel>Số điện thoại</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

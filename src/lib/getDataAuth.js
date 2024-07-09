@@ -1,11 +1,11 @@
 export default async function getDataAuth(request) {
   try {
-    const accessToken = `Bearer ${request?.token}`
+    // const accessToken = `Bearer ${request?.token}`
     const requestOptions = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ['Authorization']: accessToken,
+        // ['Authorization']: accessToken,
       },
       redirect: 'follow',
       // revalidate: request?.revalidate || 60,

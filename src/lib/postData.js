@@ -6,7 +6,7 @@ export default async function postData({
   },
 }) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API}${api}`, {
+    const res = await fetch(`${process.env.API}${api}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
@@ -20,6 +20,6 @@ export default async function postData({
 
     return res.json()
   } catch (error) {
-    console.log(`${process.env.NEXT_PUBLIC_API}${api}`)
+    console.log(`${process.env.API}${api}`)
   }
 }
