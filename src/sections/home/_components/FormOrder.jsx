@@ -1,19 +1,9 @@
 'use client'
-// {
-//     "data": {
-//             "name": "Test3",
-//             "note": "Test3",
-//             "status": "processing",
-//             "email": "trinhvanduc3@gmail.com",
-//             "phone": "0333666998",
-//             "dateandtime": "2024-06-04T08:30:00.000Z",
-//             "user": 3,
-//             "table": 4
-//     }
-// }
+
 import {zodResolver} from '@hookform/resolvers/zod'
 import {useForm} from 'react-hook-form'
 import {z} from 'zod'
+import CryptoJS from 'crypto-js'
 
 import {Button} from '@/components/ui/button'
 import {
@@ -25,9 +15,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import {Input} from '@/components/ui/input'
-import {useState, useTransition} from 'react'
+import {useEffect, useState, useTransition} from 'react'
 import {DateOrder} from './DateOrder'
-import {createOrder} from '@/actions/createOrder'
+import {convertStr2URL, fDate} from '@/lib/utils'
+import {pickBy} from 'lodash'
+import {useRouter} from 'next/navigation'
 
 const formSchema = z.object({
   name: z.string().min(1, {message: 'Vui lòng không để trống'}),
@@ -42,14 +34,15 @@ const formSchema = z.object({
       /^(999|998|997|996|995|994|993|992|991|990|979|978|977|976|975|974|973|972|971|970|969|968|967|966|965|964|963|962|961|960|899|898|897|896|895|894|893|892|891|890|889|888|887|886|885|884|883|882|881|880|879|878|877|876|875|874|873|872|871|870|859|858|857|856|855|854|853|852|851|850|839|838|837|836|835|834|833|832|831|830|809|808|807|806|805|804|803|802|801|800|699|698|697|696|695|694|693|692|691|690|689|688|687|686|685|684|683|682|681|680|679|678|677|676|675|674|673|672|671|670|599|598|597|596|595|594|593|592|591|590|509|508|507|506|505|504|503|502|501|500|429|428|427|426|425|424|423|422|421|420|389|388|387|386|385|384|383|382|381|380|379|378|377|376|375|374|373|372|371|370|359|358|357|356|355|354|353|352|351|350|299|298|297|296|295|294|293|292|291|290|289|288|287|286|285|284|283|282|281|280|269|268|267|266|265|264|263|262|261|260|259|258|257|256|255|254|253|252|251|250|249|248|247|246|245|244|243|242|241|240|239|238|237|236|235|234|233|232|231|230|229|228|227|226|225|224|223|222|221|220|219|218|217|216|215|214|213|212|211|210|98|95|94|93|92|91|90|86|84|0|82|81|66|65|64|63|62|61|60|58|57|56|55|54|53|52|51|49|48|47|46|45|44|43|41|40|39|36|34|33|32|31|30|27|20|7|1)[0-9]{0,14}$/,
       {message: 'Định dạng không hợp lệ'},
     ),
-  // date: z.string().min(1, {message: 'Vui lòng không để trống'}),
   time: z.string().min(1, {message: 'Vui lòng không để trống'}),
+  date: z.string().min(1, {message: 'Vui là chọn ngày'}),
   note: z.string(),
 })
 
-export function ProfileForm({id, token, idTable}) {
+export default function ProfileForm({id, token, idTable, dataTable}) {
+  const router = useRouter()
   const [isPending, setTransition] = useTransition()
-  const [date, setDate] = useState()
+  const [ip, setIp] = useState()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,74 +51,117 @@ export function ProfileForm({id, token, idTable}) {
       email: '',
       phone: '',
       time: '',
+      date: '',
       note: '',
     },
   })
-  function handleFormatDate(dateString) {
-    let date = new Date(dateString)
-    let isoDate = date.toISOString()
-    date.setTime(date.getTime() + 7 * 60 * 60 * 1000)
-    let newIsoDate = date.toISOString()
-    return newIsoDate
-  }
+  useEffect(() => {
+    const getIp = async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json')
+        const data = await response.json()
+        if (data) {
+          setIp(data.ip)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getIp()
+  }, [])
 
-  function handleMergeDateAndTime(dateString, timeString) {
-    const isoDateString = handleFormatDate(dateString)
-    const date = new Date(isoDateString)
-    const datePart = date.toISOString().split('T')[0]
-    const [hours, minutes] = timeString.split(':')
-    const mergedDate = new Date(`${datePart}T${hours}:${minutes}:00.000Z`)
-    mergedDate.setHours(mergedDate.getHours() - 7)
-    const mergedISOString = mergedDate.toISOString()
-    return mergedISOString
+  const values = form.watch()
+
+  function handleFormatDate(dateString) {
+    // Tạo một đối tượng Date từ chuỗi ngày tháng
+    const date = new Date(dateString)
+
+    // Lấy ngày, tháng và năm từ đối tượng Date
+    const day = date.getDate()
+    const month = date.getMonth() + 1 // getMonth() trả về tháng từ 0-11, nên cần +1
+    const year = date.getFullYear()
+
+    // Định dạng ngày và tháng với hai chữ số (thêm số 0 nếu cần)
+    const formattedDay = day < 10 ? `0${day}` : day
+    const formattedMonth = month < 10 ? `0${month}` : month
+
+    // Tạo chuỗi kết quả theo định dạng DD-MM-YYYY
+    const formattedDate = `${formattedDay}-${formattedMonth}-${year}`
+    return formattedDate
   }
-  function onSubmit(values) {
+  function onSubmit(value) {
     setTransition(async () => {
       const body = {
         data: {
-          name: values.name,
-          note: values.note,
-          email: values.email,
-          phone: values.phone,
+          name: value.name,
+          note: value.note,
+          email: value.email,
+          phone: value.phone,
           status: 'processing',
-          dateandtime: handleMergeDateAndTime(date, values.time),
+          date: handleFormatDate(value.date),
+          time: value.time,
           user: id,
-          table: idTable,
+          table:
+            dataTable?.attributes?.name +
+            ' - ' +
+            dataTable?.attributes?.floor?.data?.attributes?.name,
         },
       }
-      const formdata = new FormData()
-      formdata.append('entry.1302347709', values.name)
-      formdata.append('entry.2068127557', values.email)
-      formdata.append('entry.746753759', values.phone)
-      formdata.append(
-        'entry.1638872290',
-        handleMergeDateAndTime(date, values.time),
+      console.log('body', body)
+
+      window?.localStorage?.setItem(
+        'formDataPayment',
+        JSON.stringify(body?.data),
       )
-      formdata.append('entry.1725351599', values.note)
-      formdata.append('entry.2107664396', 'processing')
-      formdata.append('entry.423096853', idTable)
-      formdata.append('entry.344451594', id)
-      const res = await fetch(
-        'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeYDJntbTgoRJF-azx_urnO6ywTb7KFsj1vCsJvQtPQx15n8g/formResponse',
-        {
-          method: 'POST',
-          body: formdata,
-          mode: 'no-cors',
-        },
-      )
-      const request = {
-        api: `/orders`,
-        token: token,
-        body: JSON.stringify(body),
-      }
-      // createOrder(request)
-      //   .then((res) => {
-      //     console.log('🚀 ~ .then ~ res:', res)
-      //   })
-      //   .catch((error) => {
-      //     console.log('🚀 ~ createOrder ~ error:', error)
-      //   })
+
+      handlePayMent()
     })
+  }
+  const generateParams = (pickVpc = false) => {
+    const reqParam = {
+      AgainLink: process.env.NEXT_PUBLIC_DOMAIN,
+      Title: 'Booking Food',
+      vpc_AccessCode: '6BEB2546',
+      vpc_Amount: dataTable?.attributes?.price + '00',
+      vpc_CardList: 'null',
+      vpc_Command: 'pay',
+      vpc_Currency: 'VND',
+      vpc_Locale: 'en',
+      vpc_MerchTxnRef: Math.floor(Date.now() / 1000) + '_bk',
+      vpc_Merchant: 'TESTONEPAY',
+      vpc_OrderInfo:
+        values.name +
+        ' - ' +
+        dataTable?.attributes?.name +
+        ' - ' +
+        dataTable?.attributes?.floor?.data?.attributes?.name,
+      vpc_ReturnURL:
+        process.env.NEXT_PUBLIC_DOMAIN + `/payment?idTable=${idTable}`,
+      vpc_TicketNo: ip,
+      vpc_Version: '2',
+    }
+    if (pickVpc) {
+      const pickParams = pickBy(
+        reqParam,
+        (_, key) => key.startsWith('vpc_') || key.startsWith('user_'),
+      )
+      return convertStr2URL(pickParams)
+    }
+    return convertStr2URL(reqParam)
+  }
+
+  function handlePayMent() {
+    const params = generateParams(true)
+    const secretWordArray = CryptoJS.enc.Hex.parse(
+      '6D0870CDE5F24F34F3915FB0045120DB',
+    )
+    const hash = CryptoJS.HmacSHA256(params, secretWordArray)
+    const vpc_SecureHash = hash.toString(CryptoJS.enc.Hex).toUpperCase()
+    router.push(
+      `https://mtf.onepay.vn/paygate/vpcpay.op?${generateParams(
+        false,
+      )}&vpc_SecureHash=${vpc_SecureHash}`,
+    )
   }
 
   return (
@@ -195,8 +231,8 @@ export function ProfileForm({id, token, idTable}) {
             )}
           />
           <DateOrder
-            setDate={setDate}
-            date={date}
+            form={form}
+            values={values}
           />
           <FormField
             control={form.control}
@@ -214,7 +250,12 @@ export function ProfileForm({id, token, idTable}) {
               </FormItem>
             )}
           />
-          <Button type='submit'>Submit</Button>
+          <Button
+            className='cursor-pointer'
+            type='submit'
+          >
+            Thanh Toán
+          </Button>
         </form>
       </Form>
     </div>

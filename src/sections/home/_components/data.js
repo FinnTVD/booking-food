@@ -1,6 +1,6 @@
 export const initFloors = [
   {
-    id: 6,
+    id: 1,
     name: 'Tầng 1',
     value: 'floor1',
   },

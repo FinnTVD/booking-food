@@ -8,32 +8,48 @@ import {Button} from '@/components/ui/button'
 import {Calendar} from '@/components/ui/calendar'
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
 
-export function DateOrder({setDate, date}) {
+export function DateOrder({values, form}) {
   return (
     <div>
-      <div>Ngày đặt bàn:</div>
+      <div
+        className={`${
+          form.formState.errors.date?.message ? 'text-red-500' : ''
+        }`}
+      >
+        Ngày đặt bàn:
+      </div>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={'outline'}
             className={cn(
               'w-[280px] justify-start text-left font-normal',
-              !date && 'text-muted-foreground',
+              !values?.date && 'text-muted-foreground',
             )}
           >
             <CalendarIcon className='w-4 h-4 mr-2' />
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            {values?.date ? (
+              format(values?.date, 'PPP')
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0'>
           <Calendar
             mode='single'
-            selected={date}
-            onSelect={setDate}
+            selected={values?.date}
+            onSelect={(format) => {
+              form.clearErrors('date')
+              form.setValue('date', format.toString())
+            }}
             initialFocus
           />
         </PopoverContent>
       </Popover>
+      <p className='text-sm text-red-500'>
+        {form.formState.errors.date?.message}
+      </p>
     </div>
   )
 }
