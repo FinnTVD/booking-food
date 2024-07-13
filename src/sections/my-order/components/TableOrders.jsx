@@ -32,14 +32,12 @@ import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 import ConfirmCancel from './ConfirmCancel'
 
 export default function TableOrders({data, token}) {
-  console.log('🚀 ~ TableOrders ~ data:', data)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
   function handleCancelOrder(payment) {
-    console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({
@@ -50,7 +48,6 @@ export default function TableOrders({data, token}) {
       token: token,
     }
     updateStatusOrderById(request).then((res) => {
-      console.log('🚀 ~ updateStatusOrderById ~ res:', res)
       RevalidateTags('orders')
     })
   }

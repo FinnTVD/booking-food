@@ -19,6 +19,7 @@ import ICEyeActiveDisable from '@/components/icons/ICEyeActiveDisable'
 import {register} from '@/actions/register'
 import {toast} from 'sonner'
 import {useForm} from 'react-hook-form'
+import CircleLoading from './CircleLoading'
 
 //init schema
 const formSchema = z
@@ -88,13 +89,16 @@ export default function Register() {
           },
         }
         register(request).then((res) => {
-          console.log('🚀 ~ register ~ res:', res)
           if (res?.jwt) {
             toast.success('Đăng ký tài khoản thành công.', {
               duration: 3000,
               position: 'top-center',
             })
-            console.log('res', res)
+            const account = {
+              email: values.email,
+              password: values.password,
+            }
+            localStorage.setItem('account', JSON.stringify(account))
           } else {
             setIsFail(true)
           }
@@ -211,7 +215,12 @@ export default function Register() {
             Thông tin tài khoản hoặc mật khẩu không chính xác
           </p>
         )}
-        <Button type='submit'>Submit</Button>
+        <Button
+          className='min-w-[8rem]'
+          type='submit'
+        >
+          {isPending ? <CircleLoading /> : 'Đăng ký'}
+        </Button>
       </form>
     </Form>
   )

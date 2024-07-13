@@ -24,10 +24,14 @@ const roles = [
   },
 ]
 
-export default function DropdownRoles({children, role, handle}) {
+export default function  DropdownRoles({children, role, handle,idUser}) {
   const [position, setPosition] = useState(role)
 
   function handleIdRole(role) {
+    return roles.find((e) => e?.role === role)?.id
+  }
+
+  function handleGetIdRoleCurrent() {
     return roles.find((e) => e?.role === role)?.id
   }
 
@@ -40,17 +44,16 @@ export default function DropdownRoles({children, role, handle}) {
         <DropdownMenuRadioGroup
           value={position}
           onValueChange={(role) => {
-            console.log('🚀 ~ DropdownRoles ~ role:', role)
             if (position === role) return
-            console.log(handleIdRole(role))
             setPosition(role)
-            // handle()
+            handle(handleIdRole(role), handleGetIdRoleCurrent(),idUser)
           }}
         >
           {roles.map((role) => (
             <DropdownMenuRadioItem
               key={role.id}
               value={role.role}
+              className='cursor-pointer select-none'
             >
               {role.name}
             </DropdownMenuRadioItem>

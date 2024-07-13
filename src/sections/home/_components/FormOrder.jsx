@@ -107,7 +107,6 @@ export default function ProfileForm({id, token, idTable, dataTable}) {
             dataTable?.attributes?.floor?.data?.attributes?.name,
         },
       }
-      console.log('body', body)
 
       window?.localStorage?.setItem(
         'formDataPayment',

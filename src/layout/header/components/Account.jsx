@@ -18,10 +18,12 @@ export default async function Account() {
 
   return (
     <div className='flex items-center space-x-[3rem] max-md:space-x-[2rem]'>
-      {data?.role?.type !== 'authenticated' ? (
+      {data?.role?.type !== 'authenticated' && token ? (
         <Roles data={data?.role} />
-      ) : (
+      ) : token ? (
         <Link href={'/my-order'}>Đơn đặt bàn</Link>
+      ) : (
+        ''
       )}
       {token ? (
         <AvatarUser data={data} />

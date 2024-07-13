@@ -32,14 +32,12 @@ import RevalidateTags from '@/actions/revalidateTags'
 import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 
 export default function TableOrders({data, token, type}) {
-  console.log('🚀 ~ TableOrders ~ token:', token)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
   function handleCancelOrder(payment, status) {
-    console.log('🚀 ~ handleCancelOrder ~ payment:', payment)
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({
@@ -50,7 +48,6 @@ export default function TableOrders({data, token, type}) {
       token: token,
     }
     updateStatusOrderById(request).then((res) => {
-      console.log('🚀 ~ updateStatusOrderById ~ res:', res)
       RevalidateTags('order1')
       RevalidateTags('order2')
       RevalidateTags('order3')

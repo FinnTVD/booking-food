@@ -29,7 +29,6 @@ const IndexPayment = ({searchParams, dataTable}) => {
     }
     callApi()
       .then((res) => {
-        console.log('res', res)
         const list = res.toString().split('&')
         let code
         list?.forEach((e) => {

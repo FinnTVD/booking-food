@@ -14,12 +14,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import {Input} from '@/components/ui/input'
-import {useState, useTransition} from 'react'
+import {useEffect, useState, useTransition} from 'react'
 import ICEyeActive from '@/components/icons/ICEyeActive'
 import ICEyeActiveDisable from '@/components/icons/ICEyeActiveDisable'
 import {login} from '@/actions/login'
 import {setCookie} from '@/actions/setCookie'
 import {useRouter} from 'next/navigation'
+import CircleLoading from './CircleLoading'
 
 //init schema
 const formSchema = z.object({
@@ -60,6 +61,17 @@ export default function Login() {
     },
   })
 
+  useEffect(() => {
+    const account = localStorage.getItem('account')
+    if (account) {
+      const accountJson = JSON.parse(account)
+      form.reset({
+        email: accountJson.email,
+        password: accountJson.password,
+      })
+    }
+  },[])
+
   //on submit
   function onSubmit(values) {
     startTransition(() => {
@@ -72,11 +84,11 @@ export default function Login() {
           },
         }
         login(request).then((res) => {
-          console.log(res)
           if (res?.jwt) {
             setIsFail(false)
             setCookie({name: 'jwtBooking', value: res?.jwt})
-            setCookie({name: 'idBooking', value: res?.user?.id}).then(() => {
+            setCookie({ name: 'idBooking', value: res?.user?.id }).then(() => {
+              localStorage.removeItem('account')
               router.push('/')
               router.refresh()
             })
@@ -140,7 +152,9 @@ export default function Login() {
               Thông tin tài khoản hoặc mật khẩu không chính xác
             </p>
           )}
-          <Button type='submit'>Submit</Button>
+          <Button className="min-w-[8rem]" type='submit'>
+            {isPending ? <CircleLoading /> : 'Đăng nhập'}
+          </Button>
         </form>
       </Form>
     </>

@@ -8,7 +8,6 @@ export default function ItemTable({item}) {
   const direction = directions.find(
     (i) => i.value === item.attributes.direction,
   )
-  console.log('🚀 ~ ItemTable ~ item:', item)
   return (
     <article className='md:border md:border-solid md:border-[#E5E7EB] group shadow-[2px_4px_20px_0px_rgba(0,0,0,0.02)] md:hover:shadow-[2px_4px_20px_0px_rgba(12,46,112,0.04),-6px_2px_32px_0px_rgba(12,46,112,0.08)] select-none max-md:shadow-[-6px_2px_28px_0px_rgba(12,46,112,0.08),2px_4px_16px_0px_rgba(12,46,112,0.04)] rounded-[0.6rem]'>
       <div className='w-full h-[16rem] rounded-tl-[0.6rem] rounded-tr-[0.6rem] relative '>

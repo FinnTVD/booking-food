@@ -26,7 +26,9 @@ export default async function Section1() {
   const dataNew = formatData(data)
   return (
     <section className='container'>
-      <TableUsers data={dataNew} />
+      <TableUsers
+        data={dataNew}
+      />
     </section>
   )
 }

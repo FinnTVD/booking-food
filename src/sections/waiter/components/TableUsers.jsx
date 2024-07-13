@@ -33,27 +33,30 @@ import {deleteUserById} from '@/actions/deleteUserById'
 import {updateRoleUser} from '@/actions/updateRoleUser'
 import RevalidateTags from '@/actions/revalidateTags'
 import DropdownRoles from './DropdownRoles'
+import { toast } from 'sonner'
 
-export function TableUsers({data}) {
-  console.log('🚀 ~ TableUsers ~ data:', data)
+export function TableUsers({ data }) {
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
   function handleDeleteUserById(id) {
-    console.log('🚀 ~ handleDeleteUserById ~ id:', id)
     const request = {
       api: `/users/${id}`,
       token: process.env.NEXT_PUBLIC_TOKEN,
     }
-    deleteUserById(request).then((res) => {
-      console.log('🚀 ~ deleteUserById ~ res:', res)
-      RevalidateTags('waiter')
+    deleteUserById(request).then(() => {
+      RevalidateTags('waiter').then(() => {
+        toast.success('Xóa tài khoản thành công.', {
+          duration: 3000,
+          position: 'top-center',
+        })
+      })
     })
   }
 
-  function handleChangeRoleUser(idRoleNext, idRolePrev) {
+  function handleChangeRoleUser(idRoleNext, idRolePrev,idUser) {
     const body = {
       role: {
         connect: [
@@ -69,13 +72,22 @@ export function TableUsers({data}) {
       },
     }
     const request = {
-      api: `/api/users/${id}`,
+      api: `/users/${idUser}`,
       body: JSON.stringify(body),
       token: process.env.NEXT_PUBLIC_TOKEN,
     }
-    updateRoleUser(request).then((res) => {
-      console.log('res', res)
-    })
+    updateRoleUser(request)
+      .then((res) => {
+        RevalidateTags('waiter').then(() => {
+          toast.success('Thay đổi thành công.', {
+            duration: 3000,
+            position: 'top-center',
+          })
+        })
+      })
+      .catch((err) => {
+        console.log('err', err)
+      })
   }
   const columns = [
     {
@@ -194,6 +206,7 @@ export function TableUsers({data}) {
             <DropdownRoles
               handle={handleChangeRoleUser}
               role={payment?.role}
+              idUser={row.getValue('id')}
             >
               <button className='px-[1rem] py-[0.4rem] rounded-[0.5rem] text-center text-black bg-white font-bold border-none active:border-none'>
                 Phân quyền
