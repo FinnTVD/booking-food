@@ -45,7 +45,7 @@ export default function TableOrders({data, token, type}) {
           status: status,
         },
       }),
-      token: token,
+      token: process.env.NEXT_PUBLIC_TOKEN,
     }
     updateStatusOrderById(request).then((res) => {
       RevalidateTags('order1')
