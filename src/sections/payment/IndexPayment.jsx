@@ -6,8 +6,7 @@ import CryptoJS from 'crypto-js'
 import {convertStr2URL} from '@/lib/utils'
 import {createOrder} from '@/actions/createOrder'
 import {putSheet} from '@/actions/putSheet'
-const IndexPayment = ({searchParams, dataTable}) => {
-
+const IndexPayment = ({searchParams, dataTable, id}) => {
   useEffect(() => {
     const callApi = async () => {
       const res = await fetch('/api/payment', {
@@ -38,7 +37,6 @@ const IndexPayment = ({searchParams, dataTable}) => {
         return code
       })
       .then((code) => {
-        
         const dataForm = JSON.parse(
           window?.localStorage?.getItem('formDataPayment'),
         )
@@ -46,7 +44,7 @@ const IndexPayment = ({searchParams, dataTable}) => {
         formdata.append('entry.1056944520', dataForm?.name)
         formdata.append('entry.1803996443', dataForm?.email)
         formdata.append('entry.594050415', dataForm?.phone)
-        formdata.append('entry.835067757', dataForm.note)
+        formdata.append('entry.835067757', dataForm?.note)
         formdata.append('entry.964051301', dataForm?.time)
         formdata.append('entry.377556313', dataForm?.date)
         formdata.append('entry.763171905', dataForm?.user)
@@ -54,28 +52,42 @@ const IndexPayment = ({searchParams, dataTable}) => {
 
         if (dataForm && searchParams?.vpc_MerchTxnRef && code === 0) {
           formdata.append('entry.246438652', 'Done')
-          // putSheet({
-          //   method: 'POST',
-          //   body: formdata,
-          //   mode: 'no-cors',
-          // }).then((res) => {
-          //   if (res === 200) {
-          //     console.log("done");
-          //   }
-          // })
+          putSheet({
+            method: 'POST',
+            body: formdata,
+            mode: 'no-cors',
+          }).then((res) => {
+            if (res === 200) {
+              console.log("done");
+            }
+          })
+
+          const body = {
+            data: {
+              name: dataForm?.name,
+              email: dataForm?.email,
+              phone: dataForm?.phone,
+              note: dataForm?.note,
+              status: 'processing',
+              dateandtime: handleFormatDate(dataForm?.date, dataForm?.time),
+              user: Number(dataForm?.user),
+              table: Number(searchParams?.idTable),
+            },
+          }
+
           const request = {
             api: `/orders`,
-            token: token,
+            token: process.env.NEXT_PUBLIC_TOKEN,
             body: JSON.stringify(body),
           }
           createOrder(request)
-            .then((res) => {``
+            .then((res) => {
               console.log('🚀 ~ .then ~ res:', res)
             })
             .catch((error) => {
               console.log('🚀 ~ createOrder ~ error:', error)
             })
-          // window.localStorage.removeItem('formDataPayment')
+          window.localStorage.removeItem('formDataPayment')
         }
         // // nếu thánh toán thất bại sẽ đẩy data về form thất bại
         if (dataForm && searchParams?.vpc_MerchTxnRef && code !== 0) {
@@ -85,6 +97,7 @@ const IndexPayment = ({searchParams, dataTable}) => {
             body: formdata,
             mode: 'no-cors',
           })
+          window.localStorage.removeItem('formDataPayment')
         }
       })
   }, [])
@@ -115,6 +128,22 @@ const IndexPayment = ({searchParams, dataTable}) => {
     const hash = CryptoJS.HmacSHA256(paramsGenerate, secretWordArray)
     const vpc_SecureHash = hash.toString(CryptoJS.enc.Hex).toUpperCase()
     return vpc_SecureHash
+  }
+
+  const handleFormatDate = (dateStr, timeStr) => {
+    // Split the date string into day, month, and year
+    const [day, month, year] = dateStr.split('-').map(Number)
+
+    // Split the time string into hours and minutes
+    const [hours, minutes] = timeStr.split(':').map(Number)
+
+    // Create a new Date object
+    const date = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0))
+
+    // Convert to ISO 8601 format
+    const isoString = date.toISOString()
+
+    return isoString
   }
 
   return (
