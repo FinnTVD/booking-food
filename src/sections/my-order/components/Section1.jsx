@@ -9,7 +9,7 @@ export default async function Section1() {
   const id = cookieStore.get('idBooking')?.value
   const request = {
     api: `/orders?populate[table][populate]=floor&populate=user&&filters[user][id]=${id}&sort=publishedAt:desc`,
-    token: token,
+    token: process.env.TOKEN,
     tags: 'orders',
   }
   const data = await getDataAuthTags(request)

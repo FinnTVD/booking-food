@@ -16,7 +16,7 @@ export default async function page() {
   if (data?.role?.type === 'authenticated') return redirect('/')
   return (
     <main>
-      <Section1 />
+      <Section1/>
     </main>
   )
 }
