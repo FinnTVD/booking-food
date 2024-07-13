@@ -16,7 +16,7 @@ export default async function page() {
   if (data?.role?.type !== 'public') return redirect('/')
   return (
     <main className='w-full'>
-      <Section1 />
+      <Section1 id={id?.value} />
     </main>
   )
 }

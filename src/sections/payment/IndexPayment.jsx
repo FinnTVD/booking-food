@@ -7,7 +7,6 @@ import {convertStr2URL} from '@/lib/utils'
 import {createOrder} from '@/actions/createOrder'
 import {putSheet} from '@/actions/putSheet'
 const IndexPayment = ({searchParams, dataTable}) => {
-  const responsiveCode = searchParams?.vpc_TxnResponseCode
 
   useEffect(() => {
     const callApi = async () => {
@@ -39,7 +38,7 @@ const IndexPayment = ({searchParams, dataTable}) => {
         return code
       })
       .then((code) => {
-        responsiveCode
+        
         const dataForm = JSON.parse(
           window?.localStorage?.getItem('formDataPayment'),
         )
@@ -55,28 +54,28 @@ const IndexPayment = ({searchParams, dataTable}) => {
 
         if (dataForm && searchParams?.vpc_MerchTxnRef && code === 0) {
           formdata.append('entry.246438652', 'Done')
-          putSheet({
-            method: 'POST',
-            body: formdata,
-            mode: 'no-cors',
-          }).then((res) => {
-            if (res === 200) {
-              console.log("done");
-            }
-          })
-          // const request = {
-          //   api: `/orders`,
-          //   token: token,
-          //   body: JSON.stringify(body),
-          // }
-          // createOrder(request)
-          //   .then((res) => {
-          //     console.log('🚀 ~ .then ~ res:', res)
-          //   })
-          //   .catch((error) => {
-          //     console.log('🚀 ~ createOrder ~ error:', error)
-          //   })
-          window.localStorage.removeItem('formDataPayment')
+          // putSheet({
+          //   method: 'POST',
+          //   body: formdata,
+          //   mode: 'no-cors',
+          // }).then((res) => {
+          //   if (res === 200) {
+          //     console.log("done");
+          //   }
+          // })
+          const request = {
+            api: `/orders`,
+            token: token,
+            body: JSON.stringify(body),
+          }
+          createOrder(request)
+            .then((res) => {``
+              console.log('🚀 ~ .then ~ res:', res)
+            })
+            .catch((error) => {
+              console.log('🚀 ~ createOrder ~ error:', error)
+            })
+          // window.localStorage.removeItem('formDataPayment')
         }
         // // nếu thánh toán thất bại sẽ đẩy data về form thất bại
         if (dataForm && searchParams?.vpc_MerchTxnRef && code !== 0) {

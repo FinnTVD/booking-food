@@ -36,6 +36,7 @@ import DropdownRoles from './DropdownRoles'
 import { toast } from 'sonner'
 
 export function TableUsers({ data }) {
+  console.log(data);
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
