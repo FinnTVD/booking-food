@@ -2,7 +2,6 @@ import {TableUsers} from './TableUsers'
 import getDataAuthTags from '@/lib/getDataAuthTag'
 
 export default async function Section1({id}) {
-  console.log(id)
   const request = {
     api: `/users?populate=role&populate=avatar`,
     token: process.env.TOKEN,

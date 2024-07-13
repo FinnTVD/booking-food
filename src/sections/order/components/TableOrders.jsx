@@ -30,8 +30,9 @@ import {useState} from 'react'
 import ConfirmCancel from '@/sections/my-order/components/ConfirmCancel'
 import RevalidateTags from '@/actions/revalidateTags'
 import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
+import {updateStatusTable} from '@/actions/updateStatusTable'
 
-export default function TableOrders({data, token, type}) {
+export default function TableOrders({data, type}) {
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
@@ -52,6 +53,33 @@ export default function TableOrders({data, token, type}) {
       RevalidateTags('order2')
       RevalidateTags('order3')
       RevalidateTags('order4')
+      if (status === 'confirm') {
+        const request1 = {
+          api: `/tables/${payment.idTable}`,
+          token: process.env.NEXT_PUBLIC_TOKEN,
+          body: JSON.stringify({
+            data: {
+              status: 'false',
+            },
+          }),
+        }
+        updateStatusTable(request1).then(() => {
+          RevalidateTags('allTables')
+        })
+      } else if (status === 'cancel' || status === 'done') {
+        const request1 = {
+          api: `/tables/${payment.idTable}`,
+          token: process.env.NEXT_PUBLIC_TOKEN,
+          body: JSON.stringify({
+            data: {
+              status: 'true',
+            },
+          }),
+        }
+        updateStatusTable(request1).then(() => {
+          RevalidateTags('allTables')
+        })
+      }
     })
   }
   const columns = [
@@ -135,26 +163,51 @@ export default function TableOrders({data, token, type}) {
       id: 'actions',
       // enableHiding: false,
       cell: ({row}) => {
-        if (type !== 'processing') return null
+        // if (type !== 'processing') return null
         const payment = row.original
-
-        return (
-          <div className='space-x-[1rem]'>
-            <ConfirmCancel handle={() => handleCancelOrder(payment, 'cancel')}>
-              <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Huỷ đơn
-              </button>
-            </ConfirmCancel>
-            <ConfirmCancel
-              handle={() => handleCancelOrder(payment, 'confirm')}
-              title='Xác nhận đơn đặt bàn thành công?'
-            >
-              <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
-                Xác nhận
-              </button>
-            </ConfirmCancel>
-          </div>
-        )
+        console.log(payment)
+        if (type === 'confirm') {
+          return (
+            <div className='space-x-[1rem]'>
+              <ConfirmCancel
+                handle={() => handleCancelOrder(payment, 'processing')}
+              >
+                <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+                  Chờ xác nhận
+                </button>
+              </ConfirmCancel>
+              <ConfirmCancel
+                handle={() => handleCancelOrder(payment, 'done')}
+                title='Hoàn tất đơn đặt bàn này?'
+              >
+                <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
+                  Hoàn tất
+                </button>
+              </ConfirmCancel>
+            </div>
+          )
+        }
+        if (type === 'processing') {
+          return (
+            <div className='space-x-[1rem]'>
+              <ConfirmCancel
+                handle={() => handleCancelOrder(payment, 'cancel')}
+              >
+                <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
+                  Huỷ đơn
+                </button>
+              </ConfirmCancel>
+              <ConfirmCancel
+                handle={() => handleCancelOrder(payment, 'confirm')}
+                title='Xác nhận đơn đặt bàn thành công?'
+              >
+                <button className='px-[1rem] py-[0.4rem] bg-green-600 rounded-[0.5rem] text-center text-white font-bold'>
+                  Xác nhận
+                </button>
+              </ConfirmCancel>
+            </div>
+          )
+        }
       },
     },
   ]

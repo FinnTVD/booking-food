@@ -69,6 +69,7 @@ export default async function TabsOrder() {
         date: handleDate(item?.attributes?.dateandtime),
         time: handleTime(item?.attributes?.dateandtime),
         status: handleStatusOrder(item?.attributes?.status),
+        idTable: item?.attributes?.table?.data?.id,
       }
       arr.push(obj)
     })
@@ -87,13 +88,15 @@ export default async function TabsOrder() {
       </TabsList>
       <TabsContent value='processing'>
         <TableOrders
-          token={token}
           data={formatData(data1?.data)}
           type='processing'
         />
       </TabsContent>
       <TabsContent value='confirm'>
-        <TableOrders data={formatData(data2?.data)} />
+        <TableOrders
+          data={formatData(data2?.data)}
+          type='confirm'
+        />
       </TabsContent>
       <TabsContent value='done'>
         <TableOrders data={formatData(data3?.data)} />

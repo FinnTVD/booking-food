@@ -1,14 +1,14 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
-import {initFloors} from './data'
 import GridTable from './GridTable'
-import getDataAuth from '@/lib/getDataAuth'
+import getDataAuthTags from '@/lib/getDataAuthTag'
 
 export default async function TabsFloor() {
-    const request = {
-      api: `/floors`,
-      token: process.env.TOKEN,
-    }
-    const res = await getDataAuth(request)
+  const request = {
+    api: `/floors`,
+    token: process.env.TOKEN,
+    tag: 'allTables',
+  }
+  const res = await getDataAuthTags(request)
   return (
     <Tabs
       defaultValue={1}
