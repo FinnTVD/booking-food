@@ -36,8 +36,7 @@ export default function TableOrders({data, token}) {
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
-
-  function handleCancelOrder(payment) {
+  async function handleCancelOrder(payment, dataRow) {
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({
@@ -50,6 +49,23 @@ export default function TableOrders({data, token}) {
     updateStatusOrderById(request).then((res) => {
       RevalidateTags('orders')
     })
+    const formdata = new FormData()
+    formdata?.append('entry.1302347709', dataRow?.date)
+    formdata?.append('entry.2068127557', dataRow?.email)
+    formdata?.append('entry.746753759', dataRow?.id)
+    formdata?.append('entry.1638872290', dataRow?.phone)
+    formdata?.append('entry.1725351599', dataRow?.status)
+    formdata?.append('entry.2107664396', dataRow?.table)
+    formdata?.append('entry.423096853', dataRow?.time)
+    formdata?.append('entry.344451594', dataRow?.username)
+    const res = await fetch(
+      'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeYDJntbTgoRJF-azx_urnO6ywTb7KFsj1vCsJvQtPQx15n8g/formResponse',
+      {
+        method: 'POST',
+        body: formdata,
+        mode: 'no-cors',
+      },
+    )
   }
   const columns = [
     {
@@ -141,7 +157,9 @@ export default function TableOrders({data, token}) {
         )
           return null
         return (
-          <ConfirmCancel handle={() => handleCancelOrder(payment)}>
+          <ConfirmCancel
+            handle={() => handleCancelOrder(payment, row.original)}
+          >
             <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
               Huỷ đơn
             </button>
