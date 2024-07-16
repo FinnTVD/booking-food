@@ -1,7 +1,8 @@
 import {Inter} from 'next/font/google'
 import './globals.css'
 import Header from '@/layout/header/Header'
-import { Toaster } from '@/components/ui/sonner'
+import {Toaster} from '@/components/ui/sonner'
+import Script from 'next/script'
 
 const inter = Inter({subsets: ['latin']})
 
@@ -17,6 +18,16 @@ export default function RootLayout({children}) {
         <Header />
         <div className='pt-[8rem] max-md:pt-[5rem]'>{children}</div>
         <Toaster richColors />
+        <Script
+          strategy='lazyOnload'
+          src={`https://www.googletagmanager.com/gtag/js?id=GTM-5S45KWGT`}
+        ></Script>
+        <Script strategy='lazyOnload'>
+          {`window.dataLayer = window.dataLayer || [];
+							function gtag(){dataLayer.push(arguments);}
+							gtag('js', new Date());
+							gtag('config', 'GTM-5S45KWGT');`}
+        </Script>
       </body>
     </html>
   )
