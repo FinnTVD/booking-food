@@ -7,6 +7,7 @@ import {cn} from '@/lib/utils'
 import {Button} from '@/components/ui/button'
 import {Calendar} from '@/components/ui/calendar'
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
+import {before} from 'lodash'
 
 export function DateOrder({values, form}) {
   return (
@@ -37,6 +38,7 @@ export function DateOrder({values, form}) {
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0'>
           <Calendar
+            disabled={{before: new Date()}}
             mode='single'
             selected={values?.date}
             onSelect={(format) => {

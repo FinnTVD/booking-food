@@ -16,7 +16,7 @@ export default function RootLayout({children}) {
     <html lang='en'>
       <body className={inter.className}>
         <Header />
-        <div className='pt-[8rem] max-md:pt-[5rem]'>{children}</div>
+        <div className='pt-[5rem] max-md:pt-[5rem]'>{children}</div>
         <Toaster richColors />
         <Script
           strategy='lazyOnload'

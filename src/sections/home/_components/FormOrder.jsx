@@ -20,6 +20,7 @@ import {DateOrder} from './DateOrder'
 import {convertStr2URL, fDate} from '@/lib/utils'
 import {pickBy} from 'lodash'
 import {useRouter} from 'next/navigation'
+import Time from './Time'
 
 const formSchema = z.object({
   name: z.string().min(1, {message: 'Vui lòng không để trống'}),
@@ -39,7 +40,8 @@ const formSchema = z.object({
   note: z.string(),
 })
 
-export default function ProfileForm({id, token, idTable, dataTable}) {
+export default function ProfileForm({id, token, idTable, dataTable, user}) {
+  console.log(user)
   const router = useRouter()
   const [isPending, setTransition] = useTransition()
   const [ip, setIp] = useState()
@@ -47,9 +49,9 @@ export default function ProfileForm({id, token, idTable, dataTable}) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
+      name: user?.username || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
       time: '',
       date: '',
       note: '',
@@ -97,23 +99,25 @@ export default function ProfileForm({id, token, idTable, dataTable}) {
           note: value.note,
           email: value.email,
           phone: value.phone,
-          status: 'processing',
+          status: 'confirm',
           date: handleFormatDate(value.date),
           time: value.time,
           user: id,
           table:
             dataTable?.attributes?.name +
             ' - ' +
-            dataTable?.attributes?.floor?.data?.attributes?.name,
+            'Tầng ' +
+            dataTable?.attributes?.floor?.data?.id,
         },
       }
+      console.log(body.data)
 
       window?.localStorage?.setItem(
         'formDataPayment',
         JSON.stringify(body?.data),
       )
 
-      handlePayMent()
+      // handlePayMent()
     })
   }
   const generateParams = (pickVpc = false) => {
@@ -239,12 +243,13 @@ export default function ProfileForm({id, token, idTable, dataTable}) {
             render={({field}) => (
               <FormItem>
                 <FormLabel>Thời gian:</FormLabel>
-                <FormControl>
+                {/* <FormControl>
                   <Input
                     type='time'
                     {...field}
                   />
-                </FormControl>
+                </FormControl> */}
+                <Time form={form} />
                 <FormMessage />
               </FormItem>
             )}
