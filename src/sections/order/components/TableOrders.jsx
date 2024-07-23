@@ -170,10 +170,10 @@ export default function TableOrders({data, type}) {
           return (
             <div className='space-x-[1rem]'>
               <ConfirmCancel
-                handle={() => handleCancelOrder(payment, 'processing')}
+                handle={() => handleCancelOrder(payment, 'cancel')}
               >
                 <button className='px-[1rem] py-[0.4rem] bg-red-600 rounded-[0.5rem] text-center text-white font-bold'>
-                  Chờ xác nhận
+                  Huỷ đơn
                 </button>
               </ConfirmCancel>
               <ConfirmCancel

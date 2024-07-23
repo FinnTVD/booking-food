@@ -45,6 +45,7 @@ export default async function Section1() {
         table:
           item?.attributes?.table?.data?.attributes?.name +
           ` (${item?.attributes?.table?.data?.attributes?.floor?.data?.attributes?.name})`,
+        price: item?.attributes?.table?.data?.attributes?.price,
         date: handleDate(item?.attributes?.dateandtime),
         time: handleTime(item?.attributes?.dateandtime),
         status: handleStatusOrder(item?.attributes?.status),
@@ -59,6 +60,7 @@ export default async function Section1() {
       <TableOrders
         data={dataNew}
         token={token}
+        test={data}
       />
     </section>
   )

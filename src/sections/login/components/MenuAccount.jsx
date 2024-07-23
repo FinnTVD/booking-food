@@ -36,8 +36,8 @@ export default function MenuAccount({children}) {
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className='w-56'>
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+        {/* <DropdownMenuSeparator /> */}
+        {/* <DropdownMenuGroup>
           <DropdownMenuItem>
             <User className='w-4 h-4 mr-2' />
             <span>Profile</span>
@@ -106,7 +106,7 @@ export default function MenuAccount({children}) {
         <DropdownMenuItem>
           <Cloud className='w-4 h-4 mr-2' />
           <span>API</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <BtnLogOut />
       </DropdownMenuContent>

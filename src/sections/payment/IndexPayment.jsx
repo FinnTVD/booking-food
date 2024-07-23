@@ -6,6 +6,8 @@ import CryptoJS from 'crypto-js'
 import {convertStr2URL} from '@/lib/utils'
 import {createOrder} from '@/actions/createOrder'
 import {putSheet} from '@/actions/putSheet'
+import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
+import RevalidateTags from '@/actions/revalidateTags'
 const IndexPayment = ({searchParams, dataTable, id}) => {
   useEffect(() => {
     const callApi = async () => {
@@ -49,6 +51,7 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
         formdata.append('entry.377556313', dataForm?.date)
         formdata.append('entry.763171905', dataForm?.user)
         formdata.append('entry.1520761440', dataForm?.table)
+        formdata.append('entry.381384058', dataForm?.price)
 
         if (dataForm && searchParams?.vpc_MerchTxnRef && code === 0) {
           formdata.append('entry.246438652', 'Done')
@@ -58,7 +61,7 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
             mode: 'no-cors',
           }).then((res) => {
             if (res === 200) {
-              console.log("done");
+              console.log('done')
             }
           })
 
@@ -68,7 +71,7 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
               email: dataForm?.email,
               phone: dataForm?.phone,
               note: dataForm?.note,
-              status: 'processing',
+              status: 'confirm',
               dateandtime: handleFormatDate(dataForm?.date, dataForm?.time),
               user: Number(dataForm?.user),
               table: Number(searchParams?.idTable),
@@ -83,6 +86,19 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
           createOrder(request)
             .then((res) => {
               console.log('🚀 ~ .then ~ res:', res)
+              const requestUpdate = {
+                api: `/tables/${searchParams?.idTable}`,
+                body: JSON.stringify({
+                  data: {
+                    status: false,
+                  },
+                }),
+                token: process.env.NEXT_PUBLIC_TOKEN,
+              }
+              updateStatusOrderById(requestUpdate).then((res1) => {
+                console.log('🚀 ~ updateStatusOrderById ~ res1:', res1)
+                RevalidateTags('allTables')
+              })
             })
             .catch((error) => {
               console.log('🚀 ~ createOrder ~ error:', error)

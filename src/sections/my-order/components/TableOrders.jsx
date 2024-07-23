@@ -30,13 +30,16 @@ import {useState} from 'react'
 import RevalidateTags from '@/actions/revalidateTags'
 import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 import ConfirmCancel from './ConfirmCancel'
+import {formatToVND} from '@/lib/utils'
 
-export default function TableOrders({data, token}) {
+export default function TableOrders({data, token, test}) {
+  console.log('🚀 ~ TableOrders ~ test:', test)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
   async function handleCancelOrder(payment, dataRow) {
+    console.log(dataRow);
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({
@@ -128,6 +131,13 @@ export default function TableOrders({data, token}) {
       cell: ({row}) => <div className='lowercase'>{row.getValue('table')}</div>,
     },
     {
+      accessorKey: 'price',
+      header: 'Giá',
+      cell: ({row}) => (
+        <div className='lowercase'>{formatToVND(row.getValue('price'))}</div>
+      ),
+    },
+    {
       accessorKey: 'date',
       header: 'Ngày',
       cell: ({row}) => <div className='lowercase'>{row.getValue('date')}</div>,
@@ -147,14 +157,12 @@ export default function TableOrders({data, token}) {
 
     {
       id: 'actions',
+      header: 'Huỷ đơn',
       // enableHiding: false,
       cell: ({row}) => {
         const payment = row.original
-        if (
-          payment?.status === 'Đã huỷ' ||
-          payment?.status === 'Hoàn tất' ||
-          payment?.status === 'Thành công'
-        )
+
+        if (payment?.status === 'Đã huỷ' || payment?.status === 'Hoàn tất')
           return null
         return (
           <ConfirmCancel

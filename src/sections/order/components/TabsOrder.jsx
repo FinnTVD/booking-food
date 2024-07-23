@@ -4,11 +4,7 @@ import getDataAuthTags from '@/lib/getDataAuthTag'
 import {cookies} from 'next/headers'
 import TableOrders from './TableOrders'
 export default async function TabsOrder() {
-  const request1 = {
-    api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=processing&sort=publishedAt:desc`,
-    token: process.env.TOKEN,
-    tag: 'order1',
-  }
+
   const request2 = {
     api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=confirm&sort=publishedAt:desc`,
     token: process.env.TOKEN,
@@ -24,8 +20,7 @@ export default async function TabsOrder() {
     token: process.env.TOKEN,
     tag: 'order4',
   }
-  const [data1, data2, data3, data4] = await Promise.all([
-    getDataAuthTags(request1),
+  const [data2, data3, data4] = await Promise.all([
     getDataAuthTags(request2),
     getDataAuthTags(request3),
     getDataAuthTags(request4),
@@ -77,21 +72,14 @@ export default async function TabsOrder() {
   }
   return (
     <Tabs
-      defaultValue='processing'
+      defaultValue='confirm'
       className='w-full'
     >
       <TabsList className='grid w-full grid-cols-4'>
-        <TabsTrigger value='processing'>Chờ xác nhận</TabsTrigger>
-        <TabsTrigger value='confirm'>Đã xác nhận</TabsTrigger>
+        <TabsTrigger value='confirm'>Đã đặt</TabsTrigger>
         <TabsTrigger value='done'>Hoàn tất</TabsTrigger>
         <TabsTrigger value='cancel'>Đã huỷ</TabsTrigger>
       </TabsList>
-      <TabsContent value='processing'>
-        <TableOrders
-          data={formatData(data1?.data)}
-          type='processing'
-        />
-      </TabsContent>
       <TabsContent value='confirm'>
         <TableOrders
           data={formatData(data2?.data)}

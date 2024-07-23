@@ -41,7 +41,6 @@ const formSchema = z.object({
 })
 
 export default function ProfileForm({id, token, idTable, dataTable, user}) {
-  console.log(user)
   const router = useRouter()
   const [isPending, setTransition] = useTransition()
   const [ip, setIp] = useState()
@@ -108,16 +107,16 @@ export default function ProfileForm({id, token, idTable, dataTable, user}) {
             ' - ' +
             'Tầng ' +
             dataTable?.attributes?.floor?.data?.id,
+          price: dataTable?.attributes?.price,
         },
       }
-      console.log(body.data)
 
       window?.localStorage?.setItem(
         'formDataPayment',
         JSON.stringify(body?.data),
       )
 
-      // handlePayMent()
+      handlePayMent()
     })
   }
   const generateParams = (pickVpc = false) => {
