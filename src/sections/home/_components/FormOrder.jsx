@@ -116,7 +116,7 @@ export default function ProfileForm({id, token, idTable, dataTable, user}) {
         JSON.stringify(body?.data),
       )
 
-      handlePayMent()
+      // handlePayMent()
     })
   }
   const generateParams = (pickVpc = false) => {
@@ -242,13 +242,13 @@ export default function ProfileForm({id, token, idTable, dataTable, user}) {
             render={({field}) => (
               <FormItem>
                 <FormLabel>Thời gian:</FormLabel>
-                {/* <FormControl>
+                <FormControl>
                   <Input
                     type='time'
                     {...field}
                   />
-                </FormControl> */}
-                <Time form={form} />
+                </FormControl>
+                {/* <Time form={form} /> */}
                 <FormMessage />
               </FormItem>
             )}
