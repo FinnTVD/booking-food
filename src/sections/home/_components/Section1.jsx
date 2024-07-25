@@ -34,7 +34,7 @@ export default async function Section1() {
   ])
 
   return (
-    <section className='w-full h-screen pl-[8rem] overflow-hidden'>
+    <section className='w-full h-fit pl-[8rem] overflow-hidden'>
       {/* <TabsFloor /> */}
       {/* <Dashboard /> */}
       <GridTableV2

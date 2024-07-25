@@ -50,25 +50,51 @@ export default function GridTableV2({data1, data2, listId}) {
     }
   }
   return (
-    <div className='grid h-screen pb-[5rem] grid-cols-6 grid-rows-5 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
-      {dataLatest?.map((item, index) => (
-        <Link
-          href={`/${item?.attributes?.name}`}
-          key={index}
-          className='relative size-full'
-        >
-          <Image
-            className='object-fill size-full'
-            src={handleRole(item?.attributes?.status, item?.id)}
-            alt='table'
-            width={300}
-            height={100}
-          />
-          <div className='size-[2rem] rounded-full flex items-center justify-center text-black text-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white'>
-            {index + 1}
-          </div>
-        </Link>
-      ))}
+    <div className=''>
+      <div className='grid h-screen pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
+        {dataLatest?.slice(0, 18)?.map((item, index) => (
+          <Link
+            href={`/${item?.attributes?.name}`}
+            key={index}
+            className='relative size-full'
+          >
+            <Image
+              className='object-fill size-full'
+              src={handleRole(item?.attributes?.status, item?.id)}
+              alt='table'
+              width={300}
+              height={100}
+            />
+            <div className='size-[2rem] rounded-full flex items-center justify-center text-black text-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white'>
+              {index + 1}
+            </div>
+          </Link>
+        ))}
+      </div>
+      <div className='size-[6rem] flex flex-col mb-[3rem] ml-[-2rem]'>
+        <div className='flex-1 border border-black border-solid rounded-br-[6.5rem] border-t-[3px]'></div>
+        <div className='flex-1 border border-black border-solid rounded-tr-[6.5rem] border-b-[3px]'></div>
+      </div>
+      <div className='grid h-screen pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
+        {dataLatest?.slice(18, 36)?.map((item, index) => (
+          <Link
+            href={`/${item?.attributes?.name}`}
+            key={index}
+            className='relative size-full'
+          >
+            <Image
+              className='object-fill size-full'
+              src={handleRole(item?.attributes?.status, item?.id)}
+              alt='table'
+              width={300}
+              height={100}
+            />
+            <div className='size-[2rem] rounded-full flex items-center justify-center text-black text-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white'>
+              {index + 1}
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }
