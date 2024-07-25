@@ -71,7 +71,7 @@ export default function GridTableV2({data1, data2, listId}) {
           </Link>
         ))}
       </div>
-      <div className='size-[6rem] flex flex-col mb-[3rem] ml-[-2rem]'>
+      <div className='size-[6rem] flex flex-col mt-[-3.4rem] ml-[-2rem]'>
         <div className='flex-1 border border-black border-solid rounded-br-[6.5rem] border-t-[3px]'></div>
         <div className='flex-1 border border-black border-solid rounded-tr-[6.5rem] border-b-[3px]'></div>
       </div>
