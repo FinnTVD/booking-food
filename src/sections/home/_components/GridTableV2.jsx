@@ -51,7 +51,7 @@ export default function GridTableV2({data1, data2, listId}) {
   }
   return (
     <div className=''>
-      <div className='grid h-screen pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
+      <div className='grid h-[60vh] pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
         {dataLatest?.slice(0, 18)?.map((item, index) => (
           <Link
             href={`/${item?.attributes?.name}`}
@@ -75,7 +75,7 @@ export default function GridTableV2({data1, data2, listId}) {
         <div className='flex-1 border border-black border-solid rounded-br-[6.5rem] border-t-[3px]'></div>
         <div className='flex-1 border border-black border-solid rounded-tr-[6.5rem] border-b-[3px]'></div>
       </div>
-      <div className='grid h-screen pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
+      <div className='grid h-[60vh] pb-[5rem] grid-cols-6 grid-rows-3 p-[1.5rem] rounded-[0.5rem] gap-[1rem]'>
         {dataLatest?.slice(18, 36)?.map((item, index) => (
           <Link
             href={`/${item?.attributes?.name}`}
