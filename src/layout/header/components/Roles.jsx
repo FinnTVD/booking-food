@@ -9,6 +9,9 @@ export default function Roles({data}) {
           <Link href={'/report'}>Báo cáo</Link>
         </>
       )}
+      {data?.type === 'waiter' && (
+        <Link href={'/create-report'}>Tạo báo cáo hàng ngày</Link>
+      )}
       <Link href={'/order'}>Đơn đặt bàn</Link>
     </div>
   )
