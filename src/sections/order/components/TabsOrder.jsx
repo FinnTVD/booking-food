@@ -1,10 +1,8 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
 import {handleStatusOrder} from '@/lib/utils'
 import getDataAuthTags from '@/lib/getDataAuthTag'
-import {cookies} from 'next/headers'
 import TableOrders from './TableOrders'
 export default async function TabsOrder() {
-
   const request2 = {
     api: `/orders?populate[table][populate]=floor&populate=user&filters[status][$eq]=confirm&sort=publishedAt:desc`,
     token: process.env.TOKEN,
@@ -25,10 +23,6 @@ export default async function TabsOrder() {
     getDataAuthTags(request3),
     getDataAuthTags(request4),
   ])
-
-  const cookieStore = cookies()
-  const token = cookieStore.get('jwtBooking')?.value
-  const id = cookieStore.get('idBooking')?.value
 
   function handleDate(isoString) {
     const date = new Date(isoString)
@@ -64,6 +58,7 @@ export default async function TabsOrder() {
         date: handleDate(item?.attributes?.dateandtime),
         time: handleTime(item?.attributes?.dateandtime),
         status: handleStatusOrder(item?.attributes?.status),
+        price: item?.attributes?.table?.data?.attributes?.price,
         idTable: item?.attributes?.table?.data?.id,
       }
       arr.push(obj)
@@ -73,9 +68,9 @@ export default async function TabsOrder() {
   return (
     <Tabs
       defaultValue='confirm'
-      className='w-full'
+      className='w-full mt-[2rem]'
     >
-      <TabsList className='grid w-full grid-cols-4'>
+      <TabsList className='grid w-full grid-cols-3'>
         <TabsTrigger value='confirm'>Đã đặt</TabsTrigger>
         <TabsTrigger value='done'>Hoàn tất</TabsTrigger>
         <TabsTrigger value='cancel'>Đã huỷ</TabsTrigger>

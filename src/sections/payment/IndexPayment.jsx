@@ -85,7 +85,6 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
           }
           createOrder(request)
             .then((res) => {
-              console.log('🚀 ~ .then ~ res:', res)
               const requestUpdate = {
                 api: `/tables/${searchParams?.idTable}`,
                 body: JSON.stringify({
@@ -96,7 +95,6 @@ const IndexPayment = ({searchParams, dataTable, id}) => {
                 token: process.env.NEXT_PUBLIC_TOKEN,
               }
               updateStatusOrderById(requestUpdate).then((res1) => {
-                console.log('🚀 ~ updateStatusOrderById ~ res1:', res1)
                 RevalidateTags('allTables')
               })
             })

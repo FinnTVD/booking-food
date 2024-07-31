@@ -25,7 +25,6 @@ export default function GridTableV2({data1, data2, listId}) {
     }
   }
   const dataLatest = handleSort(data)
-  console.log(dataLatest)
 
   function handleRole(status, id) {
     if (listId?.length) {

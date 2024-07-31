@@ -33,13 +33,11 @@ import ConfirmCancel from './ConfirmCancel'
 import {formatToVND} from '@/lib/utils'
 
 export default function TableOrders({data, token, test}) {
-  console.log('🚀 ~ TableOrders ~ test:', test)
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
   async function handleCancelOrder(payment, dataRow) {
-    console.log(dataRow);
     const request = {
       api: `/orders/${payment.id}`,
       body: JSON.stringify({

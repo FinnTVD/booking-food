@@ -33,9 +33,9 @@ import {deleteUserById} from '@/actions/deleteUserById'
 import {updateRoleUser} from '@/actions/updateRoleUser'
 import RevalidateTags from '@/actions/revalidateTags'
 import DropdownRoles from './DropdownRoles'
-import { toast } from 'sonner'
+import {toast} from 'sonner'
 
-export function TableUsers({ data }) {
+export function TableUsers({data}) {
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
@@ -56,7 +56,7 @@ export function TableUsers({ data }) {
     })
   }
 
-  function handleChangeRoleUser(idRoleNext, idRolePrev,idUser) {
+  function handleChangeRoleUser(idRoleNext, idRolePrev, idUser) {
     const body = {
       role: {
         connect: [
@@ -208,7 +208,7 @@ export function TableUsers({ data }) {
               role={payment?.role}
               idUser={row.getValue('id')}
             >
-              <button className='px-[1rem] py-[0.4rem] rounded-[0.5rem] text-center text-black bg-white font-bold border-none active:border-none'>
+              <button className='px-[1rem] py-[0.4rem] rounded-[0.5rem] text-center text-white bg-greyscale-30 font-bold border-none active:border-none'>
                 Phân quyền
               </button>
             </DropdownRoles>
@@ -237,7 +237,7 @@ export function TableUsers({ data }) {
   })
 
   return (
-    <div className='w-full'>
+    <div className='w-full bg-white px-[1rem] rounded-[0.6rem] py-[1rem] mt-[2rem]'>
       <div className='flex items-center py-4'>
         <div className='flex space-x-[2rem] w-full'>
           <Input

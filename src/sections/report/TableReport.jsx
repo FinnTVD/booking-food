@@ -17,7 +17,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {Input} from '@/components/ui/input'
+
+import {format} from 'date-fns'
+import {Calendar as CalendarIcon} from 'lucide-react'
+
+import {cn} from '@/lib/utils'
+import {Calendar} from '@/components/ui/calendar'
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
 import {
   Table,
   TableBody,
@@ -32,8 +38,13 @@ import RevalidateTags from '@/actions/revalidateTags'
 import {updateStatusOrderById} from '@/actions/updateStatusOrderById'
 import {updateStatusTable} from '@/actions/updateStatusTable'
 import {formatToVND} from '@/lib/utils'
+import {usePathname, useRouter, useSearchParams} from 'next/navigation'
 
-export default function TableOrders({data, type}) {
+export default function TableReport({data, type}) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathName = usePathname()
+  const dateFilter = searchParams.get('day') || new Date()
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
@@ -112,7 +123,7 @@ export default function TableOrders({data, type}) {
       cell: ({row}) => <div className='capitalize'>{row.getValue('id')}</div>,
     },
     {
-      accessorKey: 'username',
+      accessorKey: 'name',
       header: ({column}) => {
         return (
           <Button
@@ -124,9 +135,7 @@ export default function TableOrders({data, type}) {
           </Button>
         )
       },
-      cell: ({row}) => (
-        <div className='lowercase'>{row.getValue('username')}</div>
-      ),
+      cell: ({row}) => <div className='lowercase'>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',
@@ -247,131 +256,171 @@ export default function TableOrders({data, type}) {
     },
   })
 
+  const handleTotalPrice = (data) => {
+    if (data?.length > 0 && Array.isArray(data)) {
+      return data.reduce((total, item) => {
+        return total + Number(item?.price)
+      }, 0)
+    } else {
+      return 0
+    }
+  }
+
   return (
-    <div className='w-full bg-white px-[1rem] rounded-[0.6rem] py-[1rem]'>
-      <div className='flex items-center py-4'>
-        <div className='flex space-x-[2rem] w-full'>
-          <Input
-            placeholder='Filter emails...'
-            value={table.getColumn('email')?.getFilterValue() ?? ''}
-            onChange={(event) =>
-              table.getColumn('email')?.setFilterValue(event.target.value)
-            }
-            className='max-w-sm'
-          />
-          <Input
-            placeholder='Filter phones...'
-            value={table.getColumn('phone')?.getFilterValue() ?? ''}
-            onChange={(event) =>
-              table.getColumn('phone')?.setFilterValue(event.target.value)
-            }
-            className='max-w-sm'
-          />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant='outline'
-              className='ml-auto'
-            >
-              Columns <ChevronDown className='w-4 h-4 ml-2' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className='border rounded-md'>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+    <>
+      <div className='w-full bg-white px-[1rem] rounded-[0.6rem] py-[1rem]'>
+        <div className='flex items-center py-4'>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'w-[280px] justify-start text-left font-normal',
+                  !dateFilter && 'text-muted-foreground',
+                )}
+              >
+                <CalendarIcon className='w-4 h-4 mr-2' />
+                {dateFilter ? (
+                  format(dateFilter, 'PPP')
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className='w-auto p-0'>
+              <Calendar
+                mode='single'
+                selected={dateFilter}
+                onSelect={(format) => {
+                  const date = new Date(format.toString())
+
+                  const options = {
+                    timeZone: 'Asia/Ho_Chi_Minh',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  }
+                  const vnDateString = date.toLocaleDateString('en-CA', options)
+                  const paramNew = new URLSearchParams(searchParams)
+
+                  paramNew.set('day', vnDateString)
+                  router.push(pathName + '?' + paramNew.toString(), {
+                    scroll: false,
+                  })
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='outline'
+                className='ml-auto'
+              >
+                Columns <ChevronDown className='w-4 h-4 ml-2' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className='capitalize'
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
                   )
                 })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className='border rounded-md'>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className='flex items-center justify-end py-4 space-x-2'>
-        <div className='flex-1 text-sm text-muted-foreground'>
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className='h-24 text-center'
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
-        <div className='space-x-2'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+        <div className='flex items-center justify-end py-4 space-x-2'>
+          <div className='flex-1 text-sm text-muted-foreground'>
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div className='space-x-2'>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+      <div className='w-fit h-[3rem] flex justify-center items-center ml-auto rounded-sm bg-white text-black mt-[1.5rem] px-[1.5rem]'>
+        Tổng cọc: {formatToVND(handleTotalPrice(data)) || '0đ'}
+      </div>
+    </>
   )
 }

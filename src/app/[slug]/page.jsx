@@ -9,7 +9,6 @@ export default async function page({params}) {
     token: process.env.TOKEN,
   }
   const data = await getDataAuth(request1)
-  console.log(data)
   return (
     <>
       <div className='w-full h-auto'>
