@@ -26,7 +26,7 @@ export default function Content({res}) {
         <nav className='flex flex-col items-center gap-4 px-2 sm:py-5'>
           <TooltipProvider>
             {floors?.map((item, index) => (
-              <Tooltip>
+              <Tooltip key={index}>
                 <TooltipTrigger asChild>
                   <Link
                     href={item?.id === 1 ? '/' : `?floor=${item?.id}`}

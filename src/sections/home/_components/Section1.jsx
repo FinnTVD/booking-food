@@ -23,7 +23,7 @@ export default async function Section1() {
   const cookieStore = cookies()
   const id = cookieStore.get('idBooking')?.value
   const request3 = {
-    api: `/orders?populate=table&populate=user&&filters[user][id]=${id}&sort=publishedAt:desc`,
+    api: `/orders?populate=table&populate=user&filters[user][id]=${id}&filters[status][$eq]=confirm&sort=publishedAt:desc`,
     token: process.env.TOKEN,
   }
   const [res, res1, res2, res3] = await Promise.all([
