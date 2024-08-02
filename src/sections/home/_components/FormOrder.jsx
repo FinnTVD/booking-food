@@ -116,7 +116,7 @@ export default function ProfileForm({id, token, idTable, dataTable, user}) {
         JSON.stringify(body?.data),
       )
 
-      // handlePayMent()
+      handlePayMent()
     })
   }
   const generateParams = (pickVpc = false) => {
